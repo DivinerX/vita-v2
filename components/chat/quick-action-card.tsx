@@ -2,18 +2,19 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { ReactNode } from "react";
-
+import { cn } from "@/lib/utils";
 interface QuickActionCardProps {
   title: string;
   description: string;
   icon: ReactNode;
   onClick: () => void;
+  className?: string;
 }
 
-export function QuickActionCard({ title, description, icon, onClick }: QuickActionCardProps) {
+export function QuickActionCard({ title, description, icon, onClick, className }: QuickActionCardProps) {
   return (
     <Card 
-      className="cursor-pointer hover:shadow-md transition-all duration-300 hover:scale-[1.02]"
+      className={cn("cursor-pointer hover:shadow-md transition-all duration-300 hover:scale-[1.02]", className)}
       onClick={onClick}
     >
       <CardContent className="p-6">

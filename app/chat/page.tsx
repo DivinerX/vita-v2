@@ -153,9 +153,9 @@ export default function ChatPage() {
       </header>
 
       {/* Chat Messages */}
-      <div 
+      <div
         ref={messageContainerRef}
-        className="flex-1 overflow-y-auto p-4 space-y-4"
+        className="flex-1 overflow-y-auto p-4 space-y-4 overflow-x-hidden"
       >
         <div className="absolute inset-0 bg-gradient-to-b from-blue-50/30 via-green-50/10 to-transparent dark:from-blue-900/10 dark:via-green-900/5 dark:to-transparent pointer-events-none"></div>
         <div className="relative z-10 space-y-4">
@@ -201,7 +201,7 @@ export default function ChatPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <div className="relative">
+              <div className="relative h-full">
                 <div className="absolute -top-10 -left-10 w-24 h-24 bg-gradient-to-r from-green-200 to-blue-200 rounded-full opacity-20 blur-xl animate-pulse"></div>
                 <QuickActionCard
                   title="Lose Weight"
@@ -210,9 +210,10 @@ export default function ChatPage() {
                   onClick={() => {
                     setInputValue("I want to lose weight and feel better about myself.");
                   }}
+                  className="h-full"
                 />
               </div>
-              <div className="relative">
+              <div className="relative h-full">
                 <div className="absolute -bottom-10 -right-10 w-24 h-24 bg-gradient-to-r from-blue-200 to-purple-200 rounded-full opacity-20 blur-xl animate-pulse"></div>
                 <QuickActionCard
                   title="Improve Sleep"
@@ -221,11 +222,35 @@ export default function ChatPage() {
                   onClick={() => {
                     setInputValue("I'm having trouble sleeping and wake up tired.");
                   }}
+                  className="h-full"
+                />
+              </div>
+              <div className="relative h-full">
+                <div className="absolute -bottom-10 right-10 w-24 h-24 bg-gradient-to-r from-blue-200 to-purple-200 rounded-full opacity-20 blur-xl animate-pulse"></div>
+                <QuickActionCard
+                  title="Get Fit"
+                  description="Create a personalized workout plan to reach fitness goals"
+                  icon={<ArrowRight className="h-5 w-5" />}
+                  onClick={() => {
+                    setInputValue("I want to get fit and feel better about myself.");
+                  }}
+                  className="h-full"
+                />
+              </div>
+              <div className="relative h-full">
+                <div className="absolute -top-10 -left-10 w-24 h-24 bg-gradient-to-r from-green-200 to-blue-200 rounded-full opacity-20 blur-xl animate-pulse"></div>
+                <QuickActionCard
+                  title="Manage Stress"
+                  description="Find ways to reduce stress in your life"
+                  icon={<ArrowRight className="h-5 w-5" />}
+                  onClick={() => {
+                    setInputValue("I'm feeling stressed and anxious.");
+                  }}
+                  className="h-full"
                 />
               </div>
             </motion.div>
           )}
-
         </div>
       </div>
 
@@ -281,6 +306,6 @@ export default function ChatPage() {
           </Button>
         </motion.div>
       </div>
-    </AnimatedGradientBackground>
+    </AnimatedGradientBackground >
   );
 }

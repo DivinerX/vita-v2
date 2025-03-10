@@ -19,26 +19,38 @@ export async function POST(request: NextRequest) {
     vitaName: profile.vita_name,
     tone: profile.vita_tone,
   });
+
   await createMessage({
     user_id: session.user.id!,
     content: message,
     role: "user",
     timestamp: new Date().toISOString(),
   });
+
   const messages = await getMessages(session.user.id!);
+
   const messagesWithSystem: ChatCompletionMessageParam[] = [
-    { role: "system", content: prompt },
+    {
+      role: "system",
+      content: prompt
+    },
+
     ...messages,
   ];
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
+    temperature: 0.5,
+    response_format: { type: "json_object" },
     messages: messagesWithSystem,
   });
+
+  const parsedResponse = JSON.parse(response.choices[0].message.content!);
+
   await createMessage({
     user_id: session.user.id!,
-    content: response.choices[0].message.content!,
+    content: parsedResponse.message,
     role: "assistant",
     timestamp: new Date().toISOString(),
   });
-  return NextResponse.json({ content: response.choices[0].message.content });
+  return NextResponse.json({ content: parsedResponse.message, relatives: parsedResponse.relatives });
 }
