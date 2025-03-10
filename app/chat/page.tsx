@@ -12,6 +12,7 @@ import { useSearchParams } from "next/navigation";
 import { AnimatedGradientBackground } from "@/components/ui/animated-gradient-background";
 import { motion } from "framer-motion";
 import api from "@/config/axios";
+import ReactMarkdown from 'react-markdown';
 
 interface Message {
   id: string;
@@ -150,7 +151,11 @@ export default function ChatPage() {
               transition={{ duration: 0.4, delay: index * 0.1 }}
             >
               <ChatMessage
-                message={message}
+                key={message.id}
+                message={{
+                  ...message,
+                  content: message.content
+                }}
                 vitaName={vitaName}
               />
             </motion.div>

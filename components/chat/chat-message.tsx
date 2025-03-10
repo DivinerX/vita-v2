@@ -3,6 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import ReactMarkdown from 'react-markdown';
 
 interface Message {
   id: string;
@@ -18,7 +19,7 @@ interface ChatMessageProps {
 
 export function ChatMessage({ message, vitaName }: ChatMessageProps) {
   const isAssistant = message.role === "assistant";
-  
+
   return (
     <div className={cn("flex items-start gap-3", isAssistant ? "" : "flex-row-reverse")}>
       <Avatar className={cn("h-8 w-8", isAssistant ? "border-green-500" : "")}>
@@ -34,11 +35,11 @@ export function ChatMessage({ message, vitaName }: ChatMessageProps) {
           </>
         )}
       </Avatar>
-      
+
       <div className={cn(
         "group relative max-w-[80%] rounded-lg px-3 py-2 text-sm",
-        isAssistant 
-          ? "bg-gradient-to-r from-green-50 to-green-100 text-gray-800" 
+        isAssistant
+          ? "bg-gradient-to-r from-green-50 to-green-100 text-gray-800"
           : "bg-primary text-primary-foreground"
       )}>
         {isAssistant && (
@@ -46,9 +47,20 @@ export function ChatMessage({ message, vitaName }: ChatMessageProps) {
             {vitaName}
           </div>
         )}
-        
-        <div className="whitespace-pre-wrap break-words">{message.content}</div>
-        
+
+        <ReactMarkdown
+          components={{
+            // Customize markdown components styling
+            h1: ({ node, ...props }) => <h1 className="text-lg font-bold" {...props} />,
+            h2: ({ node, ...props }) => <h2 className="text-md font-semibold" {...props} />,
+            ul: ({ node, ...props }) => <ul className="list-disc ml-4" {...props} />,
+            ol: ({ node, ...props }) => <ol className="list-decimal ml-4" {...props} />,
+            strong: ({ node, ...props }) => <strong className="font-bold" {...props} />,
+          }}
+        >
+          {message.content}
+        </ReactMarkdown>
+
         <div className={cn(
           "text-xs mt-1 opacity-70",
           isAssistant ? "text-gray-600" : "text-gray-300"
