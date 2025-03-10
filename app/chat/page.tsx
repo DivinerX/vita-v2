@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { MessageSquare, Send, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,7 @@ import { SuggestionChip } from "@/components/chat/suggestion-chip";
 import { useSearchParams } from "next/navigation";
 import { AnimatedGradientBackground } from "@/components/ui/animated-gradient-background";
 import { motion } from "framer-motion";
+import api from "@/config/axios";
 
 interface Message {
   id: string;
@@ -22,15 +23,14 @@ interface Message {
 export default function ChatPage() {
   const searchParams = useSearchParams();
   const goalParam = searchParams.get('goal');
-  
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [mounted, setMounted] = useState(false);
-  
-  const tone = "friend"; // This would come from user preferences
-  const vitaName = "Emma"; // This would come from user preferences
-  
+  const [tone, setTone] = useState("assistant");
+  const [vitaName, setVitaName] = useState("vita");
+
   const suggestions = [
     "How's my diet?",
     "I need help with sleep",
@@ -38,15 +38,21 @@ export default function ChatPage() {
     "I'm feeling stressed",
     "Track my water intake"
   ];
-  
+
   useEffect(() => {
     setMounted(true);
+    const getProfile = async () => {
+      const response = await api.get("profile");
+      setVitaName(response.data.vita_name);
+      setTone(response.data.vita_tone);
+    };
+    getProfile();
   }, []);
-  
+
   // Initial greeting based on selected goal
   useEffect(() => {
-    let initialMessage = "Hey there! I'm Emma, your health companion. How can I help you today?";
-    
+    let initialMessage = `Hey there! I'm ${vitaName}, your health companion. How can I help you today?`;
+
     if (goalParam) {
       const greetings: Record<string, string> = {
         'weight-loss': "Let's talk about your weight loss journey! What specific goals are you aiming for?",
@@ -58,10 +64,10 @@ export default function ChatPage() {
         'zen': "Finding your zen is so important. What's causing stress in your life right now?",
         'healthier': "Small steps lead to big changes! What area of your health would you like to improve first?"
       };
-      
+
       initialMessage = greetings[goalParam] || initialMessage;
     }
-    
+
     // Add initial greeting after a short delay
     const timer = setTimeout(() => {
       setMessages([
@@ -74,53 +80,53 @@ export default function ChatPage() {
       ]);
       setIsTyping(false);
     }, 1000);
-    
+
     setIsTyping(true);
-    
+
     return () => clearTimeout(timer);
   }, [goalParam]);
-  
-  const handleSendMessage = () => {
-    if (!inputValue.trim()) return;
-    
-    // Add user message
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content: inputValue,
-      timestamp: new Date()
-    };
-    
-    setMessages([...messages, userMessage]);
-    setInputValue("");
-    setIsTyping(true);
-    
-    // Simulate AI response after a delay
-    setTimeout(() => {
-      const responses = [
-        "I understand how you're feeling. Let's work on a plan to help you with that.",
-        "Based on what you're sharing, I'd recommend focusing on your sleep habits first. Would you like me to create a sleep improvement plan?",
-        "That's a common concern. I've created a personalized meal plan that should help with your symptoms. You'll find it in your dashboard now.",
-        "I hear you! Stress can definitely impact your overall health. Have you tried the 5-minute mindfulness exercise I added to your routine?",
-        "Great progress! Remember, consistency is key. Keep up with your hydration goals and you'll notice improvements in your energy levels."
-      ];
-      
-      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-      
+
+  const handleSendMessage = async () => {
+    try {
+      if (!inputValue.trim()) return;
+
+      // Add user message
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        role: "user",
+        content: inputValue,
+        timestamp: new Date()
+      };
+
+      // Update messages with user message
+      const updatedMessages = [...messages, userMessage];
+      setMessages(updatedMessages);
+      setInputValue("");
+      setIsTyping(true);
+
+      const response = await api.post("/message", {
+        message: inputValue,
+      });
+
       const assistantMessage: Message = {
         id: Date.now().toString(),
         role: "assistant",
-        content: randomResponse,
+        content: response.data.content,
         timestamp: new Date()
       };
       
-      setMessages(prevMessages => [...prevMessages, assistantMessage]);
+      // Use the updated messages array that includes the user message
+      setMessages([...updatedMessages, assistantMessage]);
       setIsTyping(false);
-    }, 1500);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsTyping(false);
+    }
   };
-  
+
   if (!mounted) return null;
-  
+
   return (
     <AnimatedGradientBackground className="flex flex-col h-screen bg-background">
       {/* Header */}
@@ -131,7 +137,7 @@ export default function ChatPage() {
         </div>
         <ToneIndicator tone={tone} />
       </header>
-      
+
       {/* Chat Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         <div className="absolute inset-0 bg-gradient-to-b from-blue-50/30 via-green-50/10 to-transparent dark:from-blue-900/10 dark:via-green-900/5 dark:to-transparent pointer-events-none"></div>
@@ -149,9 +155,9 @@ export default function ChatPage() {
               />
             </motion.div>
           ))}
-          
+
           {isTyping && (
-            <motion.div 
+            <motion.div
               className="flex items-center gap-2 text-muted-foreground"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -165,10 +171,10 @@ export default function ChatPage() {
               <span className="text-sm">{vitaName} is typing...</span>
             </motion.div>
           )}
-          
+
           {/* Goal cards appear if there are no messages yet */}
           {messages.length < 2 && !isTyping && (
-            <motion.div 
+            <motion.div
               className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -176,7 +182,7 @@ export default function ChatPage() {
             >
               <div className="relative">
                 <div className="absolute -top-10 -left-10 w-24 h-24 bg-gradient-to-r from-green-200 to-blue-200 rounded-full opacity-20 blur-xl animate-pulse"></div>
-                <QuickActionCard 
+                <QuickActionCard
                   title="Lose Weight"
                   description="Create a personalized plan to reach your ideal weight"
                   icon={<ArrowRight className="h-5 w-5" />}
@@ -187,7 +193,7 @@ export default function ChatPage() {
               </div>
               <div className="relative">
                 <div className="absolute -bottom-10 -right-10 w-24 h-24 bg-gradient-to-r from-blue-200 to-purple-200 rounded-full opacity-20 blur-xl animate-pulse"></div>
-                <QuickActionCard 
+                <QuickActionCard
                   title="Improve Sleep"
                   description="Develop better sleep habits for more energy"
                   icon={<ArrowRight className="h-5 w-5" />}
@@ -198,13 +204,13 @@ export default function ChatPage() {
               </div>
             </motion.div>
           )}
-          
+
         </div>
       </div>
-      
+
       {/* Suggestion Chips */}
       <div className="px-4 py-2 bg-background/80 backdrop-blur-sm">
-        <motion.div 
+        <motion.div
           className="flex flex-wrap gap-2"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -225,10 +231,10 @@ export default function ChatPage() {
           ))}
         </motion.div>
       </div>
-      
+
       {/* Input Area */}
       <div className="p-4 border-t bg-background/90 backdrop-blur-md">
-        <motion.div 
+        <motion.div
           className="flex gap-2"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -246,8 +252,8 @@ export default function ChatPage() {
             }}
             className="flex-1"
           />
-          <Button 
-            onClick={handleSendMessage} 
+          <Button
+            onClick={handleSendMessage}
             className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-md"
           >
             <Send className="h-4 w-4" />
