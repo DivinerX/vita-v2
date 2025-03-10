@@ -26,7 +26,6 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
   
   const tone = "friend"; // This would come from user preferences
@@ -43,11 +42,6 @@ export default function ChatPage() {
   useEffect(() => {
     setMounted(true);
   }, []);
-  
-  // Scroll to bottom when messages change
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
   
   // Initial greeting based on selected goal
   useEffect(() => {
@@ -139,9 +133,9 @@ export default function ChatPage() {
       </header>
       
       {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 relative">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
         <div className="absolute inset-0 bg-gradient-to-b from-blue-50/30 via-green-50/10 to-transparent dark:from-blue-900/10 dark:via-green-900/5 dark:to-transparent pointer-events-none"></div>
-        <div className="relative z-10">
+        <div className="relative z-10 space-y-4">
           {messages.map((message, index) => (
             <motion.div
               key={message.id}
@@ -205,7 +199,6 @@ export default function ChatPage() {
             </motion.div>
           )}
           
-          <div ref={messagesEndRef} />
         </div>
       </div>
       
