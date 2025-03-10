@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { MessageSquare, Send, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +12,6 @@ import { useSearchParams } from "next/navigation";
 import { AnimatedGradientBackground } from "@/components/ui/animated-gradient-background";
 import { motion } from "framer-motion";
 import api from "@/config/axios";
-import ReactMarkdown from 'react-markdown';
 
 interface Message {
   id: string;
@@ -31,6 +30,7 @@ export default function ChatPage() {
   const [mounted, setMounted] = useState(false);
   const [tone, setTone] = useState("assistant");
   const [vitaName, setVitaName] = useState("vita");
+  const messageContainerRef = useRef<HTMLDivElement>(null);
 
   const suggestions = [
     "How's my diet?",
@@ -115,7 +115,7 @@ export default function ChatPage() {
         content: response.data.content,
         timestamp: new Date()
       };
-      
+
       // Use the updated messages array that includes the user message
       setMessages([...updatedMessages, assistantMessage]);
       setIsTyping(false);
@@ -125,6 +125,19 @@ export default function ChatPage() {
       setIsTyping(false);
     }
   };
+
+  const scrollToBottom = () => {
+    if (messageContainerRef.current) {
+      messageContainerRef.current.scrollTo({
+        top: messageContainerRef.current.scrollHeight,
+        behavior: 'smooth'  // or 'auto' for instant scroll
+      });
+    }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   if (!mounted) return null;
 
@@ -140,7 +153,10 @@ export default function ChatPage() {
       </header>
 
       {/* Chat Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div 
+        ref={messageContainerRef}
+        className="flex-1 overflow-y-auto p-4 space-y-4"
+      >
         <div className="absolute inset-0 bg-gradient-to-b from-blue-50/30 via-green-50/10 to-transparent dark:from-blue-900/10 dark:via-green-900/5 dark:to-transparent pointer-events-none"></div>
         <div className="relative z-10 space-y-4">
           {messages.map((message, index) => (
