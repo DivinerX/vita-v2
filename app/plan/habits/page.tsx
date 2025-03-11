@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, ChevronLeft, ChevronRight, CalendarCheck, Clock, MoveHorizontal, Trash2, Loader2, CircleCheck } from "lucide-react";
+import { ArrowLeft, Tag, ChevronLeft, ChevronRight, CalendarCheck, Clock, MoveHorizontal, Trash2, Repeat, CircleCheck } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -20,6 +20,7 @@ function HabitItem({
   time,
   category,
   description,
+  frequency,
   on_progress,
   streak_days,
   created_at,
@@ -44,8 +45,14 @@ function HabitItem({
                 <span>{time}</span>
                 {category && (
                   <>
-                    <span>•</span>
+                    <Tag className="h-3 w-3" />
                     <span>{category}</span>
+                  </>
+                )}
+                {frequency && (
+                  <>
+                    <Repeat className="h-3 w-3" />
+                    <span>{frequency}</span>
                   </>
                 )}
               </div>
@@ -88,6 +95,7 @@ function HabitItem({
 }
 
 export default function HabitsPlanPage() {
+  const [loaded, setLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
   const [habits, setHabits] = useState<THabit[]>([]);
 
@@ -104,17 +112,18 @@ export default function HabitsPlanPage() {
   };
 
   useEffect(() => {
+    console.log("fetching habits");
     const fetchHabits = async () => {
       try {
         setLoading(true);
         const response = await api.get("/habits");
-
-        setHabits(response.data.data.filter((habit: any) => habit.time === "morning" || habit.time === "noon" || habit.time === "afternoon"));
-        setEveningHabits(response.data.data.filter((habit: any) => habit.time === "evening" || habit.time === "bedtime"));
+        setHabits(response.data.data.filter((habit: any) => habit.time.toLowerCase() === "morning" || habit.time.toLowerCase() === "noon" || habit.time.toLowerCase() === "afternoon" || habit.time.toLowerCase() === "daytime"));
+        setEveningHabits(response.data.data.filter((habit: any) => habit.time.toLowerCase() === "evening" || habit.time.toLowerCase() === "bedtime" || habit.time.toLowerCase() === "night"));
       } catch (error) {
         console.error(error);
       } finally {
         setLoading(false);
+        setLoaded(true);
       }
     };
     fetchHabits();
@@ -176,7 +185,7 @@ export default function HabitsPlanPage() {
               <TabsTrigger value="add">+ Add New</TabsTrigger>
             </TabsList>
           </div>
-          {loading ? (
+          {loading || !loaded ? (
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
                 <Card key={i} className="mb-4 animate-pulse">

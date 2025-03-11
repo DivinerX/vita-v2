@@ -1,6 +1,7 @@
 import { THabit } from "@/types";
 import { useState } from "react";
 import api from "@/config/axios";
+import { toast } from "sonner";
 interface HabitCardProps {
   habit: THabit;
 }
@@ -13,6 +14,7 @@ export function HabitCard({ habit }: HabitCardProps) {
     try {
       await api.post("/habits", { habit });
       setIsAdded(true);
+      toast.success("Habit added successfully");
     } catch (error) {
       console.error(error);
     } finally {

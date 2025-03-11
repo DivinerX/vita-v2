@@ -17,7 +17,7 @@ You should generate a habit in json format like following:
 }
 
 These are some examples of habit categories: [wellness, hydration, nutrition, movement, mindfulness, sleep, other]
-These are some examples of habit times: [morning, noon, afternoon, evening, bedtime]
+These are items of habit times: [morning, noon, afternoon, evening, bedtime, daytime, night]
 These are some examples of habit frequencies: ["9:00 PM", "9:30 PM", "Every 2 hours"]
 
 Here are some examples of items in results:
