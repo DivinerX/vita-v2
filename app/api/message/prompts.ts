@@ -42,6 +42,7 @@ Response: {
 
 ### 2. Response Guidelines
 - Provide Clear and Short Answers
+- Response message should be simple as much as possible unless the user asks for more details
 - Use evidence-based advice
 - Tailor responses to user's message
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import openai from "@/service/OpenAIService";
+import { OpenAIService } from "@/services/OpenAIService";
 import { getProfile } from "../profile/service";
 import { chatPrompts } from "./prompts";
 import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     ...messages,
   ];
-  const response = await openai.chat.completions.create({
+  const response = await OpenAIService.chat.completions.create({
     model: "gpt-4o-mini",
     temperature: 0.5,
     response_format: { type: "json_object" },

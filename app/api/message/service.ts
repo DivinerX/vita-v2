@@ -1,4 +1,4 @@
-import supabase from "@/service/supabaseService";
+import supabase from "@/services/supabaseService";
 
 export const getMessages = async (user_id: string) => {
   const { data, error } = await supabase
@@ -29,4 +29,19 @@ export const createMessage = async ({
     throw new Error(error.message);
   }
   return data;
+};
+
+export const getLastMessage = async (user_id: string) => {
+  const { data, error } = await supabase
+    .from("messages")
+    .select("*")
+    .eq("user_id", user_id)
+    .eq("role", "assistant")
+    .order("created_at", { ascending: false })
+    .limit(1);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+  return data[0];
 };

@@ -11,7 +11,9 @@ import { SuggestionChip } from "@/components/chat/suggestion-chip";
 import { useSearchParams } from "next/navigation";
 import { AnimatedGradientBackground } from "@/components/ui/animated-gradient-background";
 import { motion } from "framer-motion";
+import { TRelativeCategory } from "@/types";
 import api from "@/config/axios";
+import { RelativeCard } from "@/components/chat/relative-card";
 
 interface Message {
   id: string;
@@ -30,6 +32,7 @@ export default function ChatPage() {
   const [mounted, setMounted] = useState(false);
   const [tone, setTone] = useState("assistant");
   const [vitaName, setVitaName] = useState("vita");
+  const [relatives, setRelatives] = useState<TRelativeCategory[]>([]);
   const messageContainerRef = useRef<HTMLDivElement>(null);
 
   const suggestions = [
@@ -53,21 +56,6 @@ export default function ChatPage() {
   // Initial greeting based on selected goal
   useEffect(() => {
     let initialMessage = `Hey there! I'm ${vitaName}, your health companion. How can I help you today?`;
-
-    if (goalParam) {
-      const greetings: Record<string, string> = {
-        'weight-loss': "Let's talk about your weight loss journey! What specific goals are you aiming for?",
-        'chronic-disease': "I'm here to help you manage your health condition. What symptoms are you experiencing?",
-        'short-term-bug': "Sorry to hear you're not feeling well. Tell me what's going on so I can help you feel better!",
-        'fitness': "Ready to get fit? Let's craft a routine that works for your lifestyle and goals!",
-        'life-track': "Life feeling a bit chaotic? No worries—we'll bring order back together. What's your biggest challenge?",
-        'energy': "Feeling low on energy? Let's find what's draining you and how to recharge your batteries!",
-        'zen': "Finding your zen is so important. What's causing stress in your life right now?",
-        'healthier': "Small steps lead to big changes! What area of your health would you like to improve first?"
-      };
-
-      initialMessage = greetings[goalParam] || initialMessage;
-    }
 
     // Add initial greeting after a short delay
     const timer = setTimeout(() => {
@@ -115,6 +103,10 @@ export default function ChatPage() {
         content: response.data.content,
         timestamp: new Date()
       };
+
+      if (response.data.relatives && response.data.relatives.length > 0) {
+        setRelatives(response.data.relatives);
+      }
 
       // Use the updated messages array that includes the user message
       setMessages([...updatedMessages, assistantMessage]);
@@ -190,6 +182,19 @@ export default function ChatPage() {
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></div>
               </div>
               <span className="text-sm">{vitaName} is typing...</span>
+            </motion.div>
+          )}
+
+          {relatives.length > 0 && messages[messages.length - 1].role === "assistant" && (
+            <motion.div
+              className="grid grid-cols-1 sm:grid-cols-4 gap-4 mt-4"
+            >
+              {relatives.map((r) => (
+                <RelativeCard
+                  key={r}
+                  relative={r}
+                />
+              ))}
             </motion.div>
           )}
 

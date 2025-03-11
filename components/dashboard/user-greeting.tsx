@@ -13,9 +13,14 @@ export function UserGreeting() {
   const [userName, setUserName] = useState("");
   const [vitaName, setVitaName] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [currentDay, setCurrentDay] = useState("");
   const { data: session, status } = useSession();
-  console.log("session", session);
+  
   const hasNotifications = true;
+
+  useEffect(() => {
+    setCurrentDay(new Date().toLocaleDateString("en-US", { weekday: "long" }));
+  }, []);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -53,7 +58,7 @@ export function UserGreeting() {
             </h1>
           )}
           <p className="text-muted-foreground">
-            It's a beautiful {new Date().toLocaleDateString("en-US", { weekday: "long" })}. Ready to feel amazing?
+            It's a beautiful {currentDay}. Ready to feel amazing?
           </p>
         </div>
       </div>
