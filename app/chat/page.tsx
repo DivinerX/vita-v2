@@ -11,9 +11,10 @@ import { SuggestionChip } from "@/components/chat/suggestion-chip";
 import { useSearchParams } from "next/navigation";
 import { AnimatedGradientBackground } from "@/components/ui/animated-gradient-background";
 import { motion } from "framer-motion";
-import { TRelativeCategory } from "@/types";
+import { TRelativeCategory, THabit } from "@/types";
 import api from "@/config/axios";
 import { RelativeCard } from "@/components/chat/relative-card";
+import { HabitCard } from "@/components/chat/habit-card";
 
 interface Message {
   id: string;
@@ -33,6 +34,7 @@ export default function ChatPage() {
   const [tone, setTone] = useState("assistant");
   const [vitaName, setVitaName] = useState("vita");
   const [relatives, setRelatives] = useState<TRelativeCategory[]>([]);
+  const [habits, setHabits] = useState<THabit[]>([]);
   const messageContainerRef = useRef<HTMLDivElement>(null);
 
   const suggestions = [
@@ -193,7 +195,18 @@ export default function ChatPage() {
                 <RelativeCard
                   key={r}
                   relative={r}
+                  setHabits={setHabits}
                 />
+              ))}
+            </motion.div>
+          )}
+
+          {habits.length > 0 && messages[messages.length - 1].role === "assistant" && (
+            <motion.div
+              className="grid gap-4 mt-4"
+            >
+              {habits.map((h) => (
+                <HabitCard key={h.title} habit={h} />
               ))}
             </motion.div>
           )}

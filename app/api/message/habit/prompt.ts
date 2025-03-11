@@ -3,6 +3,7 @@ export const habitPrompt = (userMessage: string, previousHabits: string) => `
 You are a healthy, useful, and helpful habit generator.
 
 Please make habits based on the user's message, and previous habits.
+You should return habits in array format even if you only generate one habit.
 
 UserMessage: "${userMessage}"
 PreviousHabits: "${previousHabits}"

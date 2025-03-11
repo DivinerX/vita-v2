@@ -1,9 +1,10 @@
-import { TRelativeCategory } from "@/types";
+import { TRelativeCategory, THabit } from "@/types";
 import { Dumbbell, ForkKnife, Bed, Loader2 } from "lucide-react";
 import api from "@/config/axios";
 import { useState } from "react";
 interface RelativeCardProps {
   relative: TRelativeCategory;
+  setHabits: (habits: THabit[]) => void;
 }
 
 const relatives = {
@@ -16,7 +17,7 @@ const relatives = {
     borderColor: "#FF4081",
     onClick: async () => {
       const response = await api.post("/message/diet");
-      console.log(response);
+      return response;
     }
   },
   exercise: {
@@ -28,7 +29,7 @@ const relatives = {
     borderColor: "#00E5FF",
     onClick: async () => {
       const response = await api.post("/message/exercise");
-      console.log(response);
+      return response;
     }
   },
   habit: {
@@ -40,12 +41,12 @@ const relatives = {
     borderColor: "#69F0AE",
     onClick: async () => {
       const response = await api.post("/message/habit");
-      console.log(response);
+      return response;
     }
   }
 }
 
-export function RelativeCard({ relative }: RelativeCardProps) {
+export function RelativeCard({ relative, setHabits }: RelativeCardProps) {
   const [isLoading, setIsLoading] = useState(false);
   return (
     <div
@@ -60,7 +61,15 @@ export function RelativeCard({ relative }: RelativeCardProps) {
       onClick={async () => {
         setIsLoading(true);
         try {
-          await relatives[relative].onClick();
+          const response = await relatives[relative].onClick();
+          console.log(response.data);
+          if (relative === "habit") {
+            if (response.data.length > 0) {
+              setHabits(response.data);
+            } else {
+              setHabits([response.data]);
+            }
+          }
         } catch (error) {
           console.error(error);
         } finally {
