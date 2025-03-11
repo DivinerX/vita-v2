@@ -1,4 +1,3 @@
-
 export const habitPrompt = (userMessage: string, previousHabits: string) => `
 You are a healthy, useful, and helpful habit generator.
 
@@ -17,8 +16,8 @@ You should generate a habit in json format like following:
   "frequency": "habit frequency",
 }
 
-These are some examples of habit categories: [Hydration, Mindfulness, Movement, Sleep, Nutrition, Relaxation, Social, Other]
-These are some examples of habit times: [Daytime, Evening, Night]
+These are some examples of habit categories: [wellness, hydration, nutrition, movement, mindfulness, sleep, other]
+These are some examples of habit times: [morning, noon, afternoon, evening, bedtime]
 These are some examples of habit frequencies: ["9:00 PM", "9:30 PM", "Every 2 hours"]
 
 Here are some examples of items in results:
