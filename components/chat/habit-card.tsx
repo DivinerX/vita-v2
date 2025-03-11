@@ -1,10 +1,25 @@
 import { THabit } from "@/types";
-
+import { useState } from "react";
+import api from "@/config/axios";
 interface HabitCardProps {
   habit: THabit;
 }
 
 export function HabitCard({ habit }: HabitCardProps) {
+  const [isAdding, setIsAdding] = useState(false);
+  const [isAdded, setIsAdded] = useState(false);
+  const handleAddHabit = async () => {
+    setIsAdding(true);
+    try {
+      await api.post("/habits", { habit });
+      setIsAdded(true);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsAdding(false);
+    }
+  };
+  
   return (
     <div className="
       border border-gray-200 
@@ -29,8 +44,12 @@ export function HabitCard({ habit }: HabitCardProps) {
               transform transition-all duration-200
               shadow-md hover:shadow-lg
               focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50
-            ">
-              Add to my habits
+              disabled:opacity-50 disabled:cursor-not-allowed
+            "
+            disabled={isAdding || isAdded}
+            onClick={handleAddHabit}
+            >
+              {isAdding ? "Adding..." : isAdded ? "Added" : "Add to my habits"}
             </button>
           </div>
           <p className="text-gray-600 text-sm leading-relaxed group-hover:text-gray-700 transition-colors">{habit.description}</p>
