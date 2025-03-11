@@ -1,7 +1,7 @@
 import { TRelativeCategory } from "@/types";
-import { Dumbbell, ForkKnife, Bed } from "lucide-react";
+import { Dumbbell, ForkKnife, Bed, Loader2 } from "lucide-react";
 import api from "@/config/axios";
-
+import { useState } from "react";
 interface RelativeCardProps {
   relative: TRelativeCategory;
 }
@@ -11,9 +11,9 @@ const relatives = {
     title: "Diet",
     description: "Create a personalized diet plan to reach your goals",
     icon: <ForkKnife className="h-6 w-6" />,
-    bgColor: "#FFF3DC",
-    textColor: "#FF9800",
-    borderColor: "#FFB74D",
+    bgColor: "#FFE0E6",
+    textColor: "#FF1744",
+    borderColor: "#FF4081",
     onClick: async () => {
       const response = await api.post("/message/diet");
       console.log(response);
@@ -23,9 +23,9 @@ const relatives = {
     title: "Exercise",
     description: "Create a personalized exercise plan to reach your goals",
     icon: <Dumbbell className="h-6 w-6" />,
-    bgColor: "#E3F2FD",
-    textColor: "#1976D2",
-    borderColor: "#64B5F6",
+    bgColor: "#E0F7FA",
+    textColor: "#00B8D4",
+    borderColor: "#00E5FF",
     onClick: async () => {
       const response = await api.post("/message/exercise");
       console.log(response);
@@ -36,8 +36,8 @@ const relatives = {
     description: "Create a personalized habit plan to reach your goals",
     icon: <Bed className="h-6 w-6" />,
     bgColor: "#E8F5E9",
-    textColor: "#2E7D32",
-    borderColor: "#81C784",
+    textColor: "#00C853",
+    borderColor: "#69F0AE",
     onClick: async () => {
       const response = await api.post("/message/habit");
       console.log(response);
@@ -46,18 +46,33 @@ const relatives = {
 }
 
 export function RelativeCard({ relative }: RelativeCardProps) {
+  const [isLoading, setIsLoading] = useState(false);
   return (
     <div
-      className="group cursor-pointer rounded-xl p-6 transition-all duration-300 hover:-translate-y-1"
+      className="group relative cursor-pointer rounded-xl p-6 transition-all duration-300 hover:-translate-y-1"
       style={{ 
         backgroundColor: relatives[relative].bgColor,
         border: `1px solid ${relatives[relative].borderColor}`,
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+        opacity: isLoading ? 0.5 : 1,
+        cursor: isLoading ? 'not-allowed' : 'pointer'
       }}
-      onClick={() => {
-        relatives[relative].onClick();
+      onClick={async () => {
+        setIsLoading(true);
+        try {
+          await relatives[relative].onClick();
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setIsLoading(false);
+        }
       }}
     >
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/5">
+          <Loader2 className="h-6 w-6 animate-spin" style={{ color: relatives[relative].textColor }} />
+        </div>
+      )}
       <div className="flex items-center gap-3 mb-3">
         <div 
           className="p-2 rounded-lg transition-colors duration-300"
