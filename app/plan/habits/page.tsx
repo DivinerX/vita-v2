@@ -116,7 +116,7 @@ export default function HabitsPlanPage() {
     const fetchHabits = async () => {
       try {
         setLoading(true);
-        const response = await api.get("/habits");
+        const response = await api.get("/habit");
         setHabits(response.data.data.filter((habit: any) => habit.time.toLowerCase() === "morning" || habit.time.toLowerCase() === "noon" || habit.time.toLowerCase() === "afternoon" || habit.time.toLowerCase() === "daytime"));
         setEveningHabits(response.data.data.filter((habit: any) => habit.time.toLowerCase() === "evening" || habit.time.toLowerCase() === "bedtime" || habit.time.toLowerCase() === "night"));
       } catch (error) {

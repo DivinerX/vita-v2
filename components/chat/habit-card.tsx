@@ -12,7 +12,7 @@ export function HabitCard({ habit }: HabitCardProps) {
   const handleAddHabit = async () => {
     setIsAdding(true);
     try {
-      await api.post("/habits", { habit });
+      await api.post("/habit", { habit });
       setIsAdded(true);
       toast.success("Habit added successfully");
     } catch (error) {

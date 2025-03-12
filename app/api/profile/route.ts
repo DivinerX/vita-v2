@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authOptions } from "@/config/authOption";
 import { getServerSession } from "next-auth";
-import { getProfile } from "./service";
+import { getProfile } from "./services";
 
 export async function GET(request: NextRequest) {
   try {

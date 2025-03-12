@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { OpenAIService } from "@/services/OpenAIService";
-import { getProfile } from "../profile/service";
+import { getProfile } from "../profile/services";
 import { chatPrompts } from "./prompts";
 import { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { getServerSession } from "next-auth";
