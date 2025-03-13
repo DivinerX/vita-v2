@@ -20,6 +20,7 @@ export const addJournal = async (userId: string, journal: TJournalInput) => {
   const profile = await getProfile(userId);
   const tone = profile.tone;
   const prompt = journalPrompt( journal.content, tone, previousJournals);
+  console.log(prompt);
   const result = await OpenAIService.chat.completions.create({
     model: "gpt-3.5-turbo",
     messages: [{ role: "user", content: prompt }],
@@ -30,7 +31,6 @@ export const addJournal = async (userId: string, journal: TJournalInput) => {
     .select("*")
     .single();
   
-  console.log(data, error);
   if (error) {
     throw new Error(error.message);
   }

@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
   const prompt = habitPrompt(lastMessage.content, JSON.stringify(habits));
   const response = await OpenAIService.chat.completions.create({
     model: "gpt-4o-mini",
-    messages: [{ role: "user", content: prompt }],
+    messages: [{ role: "system", content: prompt }],
     response_format: { type: "json_object" },
   });
 

@@ -1,10 +1,13 @@
 import { TRelativeCategory, THabit } from "@/types";
+import { TExercise } from "@/types/exercise";
 import { Dumbbell, ForkKnife, Bed, Loader2 } from "lucide-react";
 import api from "@/config/axios";
 import { useState } from "react";
 interface RelativeCardProps {
   relative: TRelativeCategory;
   setHabits: (habits: THabit[]) => void;
+  setExercises: (exercises: TExercise[]) => void;
+  setExerciseGroupSuggestions: (exerciseGroupSuggestions: { name: string, existing: boolean }[]) => void;
 }
 
 const relatives = {
@@ -46,12 +49,12 @@ const relatives = {
   }
 }
 
-export function RelativeCard({ relative, setHabits }: RelativeCardProps) {
+export function RelativeCard({ relative, setHabits, setExercises, setExerciseGroupSuggestions }: RelativeCardProps) {
   const [isLoading, setIsLoading] = useState(false);
   return (
     <div
       className="group relative cursor-pointer rounded-xl p-6 transition-all duration-300 hover:-translate-y-1"
-      style={{ 
+      style={{
         backgroundColor: relatives[relative].bgColor,
         border: `1px solid ${relatives[relative].borderColor}`,
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
@@ -69,6 +72,9 @@ export function RelativeCard({ relative, setHabits }: RelativeCardProps) {
             } else {
               setHabits([response.data]);
             }
+          } else if (relative === "exercise") {
+            setExercises(response.data.exercises);
+            setExerciseGroupSuggestions(response.data.suggestedGroups);
           }
         } catch (error) {
           console.error(error);
@@ -83,16 +89,16 @@ export function RelativeCard({ relative, setHabits }: RelativeCardProps) {
         </div>
       )}
       <div className="flex items-center gap-3 mb-3">
-        <div 
+        <div
           className="p-2 rounded-lg transition-colors duration-300"
-          style={{ 
+          style={{
             backgroundColor: `${relatives[relative].borderColor}40`,
-            color: relatives[relative].textColor 
+            color: relatives[relative].textColor
           }}
         >
           {relatives[relative].icon}
         </div>
-        <h3 
+        <h3
           className="text-xl font-semibold tracking-tight"
           style={{ color: relatives[relative].textColor }}
         >

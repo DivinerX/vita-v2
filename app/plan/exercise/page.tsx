@@ -6,6 +6,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, ChevronLeft, ChevronRight, Dumbbell, Flame } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
+import { TExerciseGroup } from "@/types/exercise";
+import { useEffect } from "react";
+import api from "@/config/axios";
+import { useState } from "react";
 
 interface ExerciseItemProps {
   name: string;
@@ -89,6 +93,17 @@ function ExerciseItem({
 }
 
 export default function ExercisePlanPage() {
+  // const [exerciseData, setExerciseData] = useState<TExerciseGroup[]>([]);
+
+  useEffect(() => {
+    const fetchExerciseData = async () => {
+      const response = await api.get("/exercise");
+      console.log(response.data);
+      // setExerciseData(response.data);
+    };
+    fetchExerciseData();
+  }, []);
+  
   const exerciseData = {
     day1: [
       {

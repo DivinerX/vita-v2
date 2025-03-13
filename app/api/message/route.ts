@@ -38,11 +38,13 @@ export async function POST(request: NextRequest) {
     ...messages,
   ];
   const response = await OpenAIService.chat.completions.create({
-    model: "gpt-4o-mini",
-    temperature: 0.5,
+    model: "gpt-3.5-turbo",
+    temperature: 1,
     response_format: { type: "json_object" },
     messages: messagesWithSystem,
   });
+
+  console.log(response.choices[0].message.content);
 
   const parsedResponse = JSON.parse(response.choices[0].message.content!);
 

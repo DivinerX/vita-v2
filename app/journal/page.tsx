@@ -14,6 +14,7 @@ import { toast } from "sonner";
 export default function JournalPage() {
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [currentEntry, setCurrentEntry] = useState("");
   const [entries, setEntries] = useState<TJournal[]>([
     {
@@ -31,7 +32,7 @@ export default function JournalPage() {
       reflection: "Sleep challenges can be frustrating, but I'm impressed you still prioritized movement with your lunch walk! That shows real commitment. Based on your pattern, we might want to adjust your evening routine—perhaps shifting your exercise earlier and adding a calming tea ritual before bed could help with those sleep disruptions."
     }
   ]);
-  
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -54,35 +55,44 @@ export default function JournalPage() {
 
   const handleSaveEntry = async () => {
     if (!currentEntry.trim()) return;
-
-    const response = await api.post("/journal", {
-      content: currentEntry,
-    });
-
-    console.log(response);
+    try {
+      setSubmitting(true);
+      const response = await api.post("/journal", {
+        content: currentEntry,
+      });
+      setEntries([...entries, response.data.data]);
+      toast.success("Journal saved successfully");
+      setCurrentEntry("");
+    } catch (error) {
+      console.error("Failed to save journal:", error);
+      toast.error("Failed to save journal");
+    } finally {
+      setSubmitting(false);
+    }
   };
-  
+
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', { 
+    return new Intl.DateTimeFormat('en-US', {
       weekday: 'long',
-      month: 'long', 
+      month: 'long',
       day: 'numeric',
       year: 'numeric'
     }).format(date);
   };
-  
+
   if (!mounted) return null;
 
   return (
     <AnimatedGradientBackground className="min-h-screen bg-background p-4 sm:p-6 lg:p-8">
       <div className="max-w-3xl mx-auto relative z-10">
-        <motion.div 
+        <motion.div
           className="flex items-center gap-2 mb-6"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <Button variant="ghost" size="icon" asChild className="relative">
+          <Button
+            variant="ghost" size="icon" asChild className="relative">
             <Link href="/dashboard">
               <div className="absolute -top-2 -left-2 w-12 h-12 bg-blue-200/30 dark:bg-blue-800/30 rounded-full blur-xl"></div>
               <ArrowLeft className="h-5 w-5 relative z-10" />
@@ -90,7 +100,7 @@ export default function JournalPage() {
           </Button>
           <h1 className="text-2xl font-bold">Your Private Haven</h1>
         </motion.div>
-        
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -119,19 +129,19 @@ export default function JournalPage() {
                 <PenLine className="inline h-4 w-4 mr-1" />
                 Your journal helps track your wellness journey
               </p>
-              <Button 
+              <Button
                 onClick={handleSaveEntry}
-                disabled={!currentEntry.trim()}
+                disabled={!currentEntry.trim() || submitting}
                 className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-md"
               >
-                Save & Reflect
+                {submitting ? "Saving..." : "Save & Reflect"}
               </Button>
             </CardFooter>
           </Card>
         </motion.div>
-        
+
         <div className="space-y-6">
-          <motion.h2 
+          <motion.h2
             className="text-xl font-semibold"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -173,7 +183,7 @@ export default function JournalPage() {
               ))}
             </div>
           ) : entries.length === 0 ? (
-            <motion.div 
+            <motion.div
               className="text-center p-8 bg-muted rounded-lg"
             >
               <p className="text-muted-foreground">No journal entries yet. Start writing to track your wellness journey!</p>
@@ -213,8 +223,8 @@ export default function JournalPage() {
             ))
           )}
         </div>
-        
-        <motion.footer 
+
+        <motion.footer
           className="mt-8 text-center text-sm text-muted-foreground pb-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
