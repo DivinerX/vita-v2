@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { MessageSquare, Send, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,7 +27,7 @@ interface Message {
   timestamp: Date;
 }
 
-export default function ChatPage() {
+function ChatComponent() {
   const searchParams = useSearchParams();
   const goalParam = searchParams.get('goal');
 
@@ -341,3 +341,13 @@ export default function ChatPage() {
     </AnimatedGradientBackground >
   );
 }
+
+function ChatPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ChatComponent />
+    </Suspense>
+  );
+}
+
+export default ChatPage;

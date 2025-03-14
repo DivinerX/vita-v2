@@ -23,6 +23,9 @@ export async function POST(request: NextRequest) {
       .eq("user_id", data.user.id)
       .single();
 
+    if (fetchError) {
+      return NextResponse.json({ error: fetchError.message }, { status: 500 });
+    }
     let userError;
     if (existingProfile) {
       // Update existing profile

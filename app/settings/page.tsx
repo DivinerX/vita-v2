@@ -199,7 +199,7 @@ export default function SettingsPage() {
                   
                   <div className="space-y-3">
                     <Label>Vita's Tone</Label>
-                    <ToneSelector selectedTone={selectedTone} setSelectedTone={setSelectedTone} />
+                    <ToneSelector name="vita-tone" selectedTone={selectedTone} setSelectedTone={setSelectedTone} />
                   </div>
                   
                   <div className="space-y-2">
