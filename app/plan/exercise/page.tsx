@@ -6,20 +6,28 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, ChevronLeft, ChevronRight, Dumbbell, Flame } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
-import { TExerciseGroup } from "@/types/exercise";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import api from "@/config/axios";
-import { useState } from "react";
 
-interface ExerciseItemProps {
+interface Exercise {
+  id: string;
   name: string;
   duration: string;
   difficulty: string;
   calories: number;
-  muscleGroups: string[];
+  muscleGroups: string;
   image?: string;
-  completed?: boolean;
   videoUrl?: string;
+  guideline?: string;
+  option: string;
+}
+
+interface ExerciseGroup {
+  id: string;
+  name: string;
+  description: string;
+  insight: string;
+  exercises: Exercise[];
 }
 
 function ExerciseItem({ 
@@ -31,9 +39,9 @@ function ExerciseItem({
   image, 
   completed = false,
   videoUrl 
-}: ExerciseItemProps) {
+}: Exercise & { completed?: boolean }) {
   return (
-    <Card className={`mb-6 ${completed ? 'border-green-200 bg-green-50/50' : ''}`}>
+    <Card className={`mb-6`}>
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
           <CardTitle className="text-lg">{name}</CardTitle>
@@ -54,7 +62,7 @@ function ExerciseItem({
           )}
           <div className="flex-1">
             <div className="flex flex-wrap gap-1 mb-2">
-              {muscleGroups.map((group, i) => (
+              {muscleGroups.split(',').map((group, i) => (
                 <span 
                   key={i} 
                   className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800"
@@ -93,68 +101,78 @@ function ExerciseItem({
 }
 
 export default function ExercisePlanPage() {
-  // const [exerciseData, setExerciseData] = useState<TExerciseGroup[]>([]);
+  const [exerciseGroups, setExerciseGroups] = useState<ExerciseGroup[]>([]);
+  const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
+  const [optionTabs, setOptionTabs] = useState<string[]>([]);
+  const [exercisesByOption, setExercisesByOption] = useState<Record<string, Exercise[]>>({});
+  const [completedCount, setCompletedCount] = useState(0);
 
   useEffect(() => {
     const fetchExerciseData = async () => {
-      const response = await api.get("/exercise");
-      console.log(response.data);
-      // setExerciseData(response.data);
+      try {
+        const response = await api.get("/exercise");
+        setExerciseGroups(response.data);
+        
+        if (response.data.length > 0) {
+          organizeExercisesByOption(response.data[0]);
+        }
+      } catch (error) {
+        console.error("Error fetching exercise data:", error);
+      }
     };
     fetchExerciseData();
   }, []);
-  
-  const exerciseData = {
-    day1: [
-      {
-        name: "Morning Stretch Routine",
-        duration: "10 minutes",
-        difficulty: "Beginner",
-        calories: 60,
-        muscleGroups: ["Full Body", "Flexibility"],
-        image: "https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?w=500&auto=format&fit=crop&q=60",
-        completed: true,
-        videoUrl: "#"
-      },
-      {
-        name: "Bodyweight HIIT Circuit",
-        duration: "15 minutes",
-        difficulty: "Moderate",
-        calories: 180,
-        muscleGroups: ["Core", "Lower Body", "Cardio"],
-        image: "https://images.unsplash.com/photo-1599058917765-a780eda07a3e?w=500&auto=format&fit=crop&q=60",
-        videoUrl: "#"
-      },
-      {
-        name: "Evening Yoga Flow",
-        duration: "20 minutes",
-        difficulty: "Beginner",
-        calories: 120,
-        muscleGroups: ["Core", "Balance", "Flexibility"],
-        image: "https://media.istockphoto.com/id/1490278453/photo/a-girl-gracefully-strikes-a-yoga-asana-on-the-beach-connecting-with-the-serene-beauty-of-the.webp?a=1&b=1&s=612x612&w=0&k=20&c=qA0r1V2wPak_NiogUVd6FHvERVa1JRZkk-xZlaIKwX4=",
-        videoUrl: "#"
+
+  const organizeExercisesByOption = (group: ExerciseGroup) => {
+    if (!group.exercises || group.exercises.length === 0) {
+      setOptionTabs([]);
+      setExercisesByOption({});
+      return;
+    }
+
+    // Group exercises by option
+    const groupedExercises: Record<string, Exercise[]> = {};
+    const options = new Set<string>();
+
+    group.exercises.forEach(exercise => {
+      if (exercise.option) {
+        options.add(exercise.option);
+        if (!groupedExercises[exercise.option]) {
+          groupedExercises[exercise.option] = [];
+        }
+        groupedExercises[exercise.option].push(exercise);
       }
-    ],
-    day2: [
-      {
-        name: "Upper Body Strength",
-        duration: "25 minutes",
-        difficulty: "Moderate",
-        calories: 210,
-        muscleGroups: ["Arms", "Chest", "Back"],
-        image: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=500&auto=format&fit=crop&q=60",
-        videoUrl: "#"
-      },
-      {
-        name: "Low-Impact Cardio",
-        duration: "15 minutes",
-        difficulty: "Beginner",
-        calories: 150,
-        muscleGroups: ["Cardio", "Full Body"],
-        image: "https://images.unsplash.com/photo-1538805060514-97d9cc17730c?w=500&auto=format&fit=crop&q=60",
-        videoUrl: "#"
-      }
-    ]
+    });
+
+    // Convert options to array and sort
+    const optionsArray = Array.from(options);
+    setOptionTabs(optionsArray);
+    setExercisesByOption(groupedExercises);
+  };
+
+  const handlePrevious = () => {
+    if (currentGroupIndex > 0) {
+      const newIndex = currentGroupIndex - 1;
+      setCurrentGroupIndex(newIndex);
+      organizeExercisesByOption(exerciseGroups[newIndex]);
+    }
+  };
+
+  const handleNext = () => {
+    if (currentGroupIndex < exerciseGroups.length - 1) {
+      const newIndex = currentGroupIndex + 1;
+      setCurrentGroupIndex(newIndex);
+      organizeExercisesByOption(exerciseGroups[newIndex]);
+    }
+  };
+
+  const currentGroup = exerciseGroups[currentGroupIndex];
+  const totalExercises = currentGroup?.exercises?.length || 0;
+  const progressPercentage = totalExercises > 0 ? (completedCount / totalExercises) * 100 : 0;
+
+  // Format muscle groups from comma-separated string to array
+  const formatMuscleGroups = (muscleGroupsStr: string): string[] => {
+    return muscleGroupsStr ? muscleGroupsStr.split(',') : [];
   };
 
   return (
@@ -169,78 +187,100 @@ export default function ExercisePlanPage() {
           <h1 className="text-2xl font-bold">Your Exercise Plan</h1>
         </div>
         
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h2 className="text-xl font-semibold">Build Strength & Energy</h2>
-            <p className="text-muted-foreground">Customized for your fitness level</p>
-          </div>
-          
-          <div className="flex space-x-2">
-            <Button variant="outline" size="sm" disabled>
-              <ChevronLeft className="h-4 w-4 mr-1" />
-              Previous
-            </Button>
-            <Button variant="outline" size="sm">
-              Next
-              <ChevronRight className="h-4 w-4 ml-1" />
-            </Button>
-          </div>
-        </div>
-        
-        <Card className="mb-6 border-blue-200 bg-blue-50">
-          <CardContent className="p-4">
-            <div className="flex items-start gap-3">
-              <div className="bg-blue-500 text-white p-2 rounded-full">
-                <Dumbbell className="h-5 w-5" />
-              </div>
+        {currentGroup && (
+          <>
+            <div className="flex justify-between items-center mb-6">
               <div>
-                <h3 className="font-medium">Fitness AI Insights</h3>
-                <p className="text-sm text-muted-foreground">
-                  This plan focuses on building functional strength and increasing your energy levels.
-                  The exercises are designed to be gentle on your joints while still providing an effective workout.
-                </p>
+                <h2 className="text-xl font-semibold">{currentGroup.name}</h2>
+                <p className="text-muted-foreground">{currentGroup.description}</p>
+              </div>
+              
+              <div className="flex space-x-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handlePrevious}
+                  disabled={currentGroupIndex === 0}
+                >
+                  <ChevronLeft className="h-4 w-4 mr-1" />
+                  Previous
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleNext}
+                  disabled={currentGroupIndex === exerciseGroups.length - 1}
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
               </div>
             </div>
-          </CardContent>
-        </Card>
-        
-        <div className="mb-6">
-          <h3 className="font-medium mb-2">Weekly Progress</h3>
-          <div className="flex justify-between text-sm mb-1">
-            <span>4 of 14 exercises completed</span>
-            <span>29%</span>
-          </div>
-          <Progress value={29} className="h-2" />
-        </div>
-        
-        <Tabs defaultValue="day1" className="mb-6">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="font-medium">Your Program</h3>
-            <TabsList>
-              <TabsTrigger value="day1">Day 1</TabsTrigger>
-              <TabsTrigger value="day2">Day 2</TabsTrigger>
-              <TabsTrigger value="day3">Day 3</TabsTrigger>
-            </TabsList>
-          </div>
-          
-          <TabsContent value="day1" className="space-y-4">
-            {exerciseData.day1.map((exercise, index) => (
-              <ExerciseItem key={index} {...exercise} />
-            ))}
-          </TabsContent>
-          
-          <TabsContent value="day2" className="space-y-4">
-            {exerciseData.day2.map((exercise, index) => (
-              <ExerciseItem key={index} {...exercise} />
-            ))}
-          </TabsContent>
-          
-          <TabsContent value="day3">
-            <div className="flex items-center justify-center h-40 bg-muted rounded-lg">
-              <p className="text-muted-foreground">Exercises for Day 3 are being prepared</p>
+            
+            <Card className="mb-6 border-blue-200 bg-blue-50">
+              <CardContent className="p-4">
+                <div className="flex items-start gap-3">
+                  <div className="bg-blue-500 text-white p-2 rounded-full">
+                    <Dumbbell className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium">Fitness AI Insights</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {currentGroup.insight}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <div className="mb-6">
+              <h3 className="font-medium mb-2">Weekly Progress</h3>
+              <div className="flex justify-between text-sm mb-1">
+                <span>{completedCount} of {totalExercises} exercises completed</span>
+                <span>{Math.round(progressPercentage)}%</span>
+              </div>
+              <Progress value={progressPercentage} className="h-2" />
             </div>
-          </TabsContent>
-        </Tabs>
+            
+            {optionTabs.length > 0 ? (
+              <Tabs defaultValue={optionTabs[0]} className="mb-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="font-medium">Your Program</h3>
+                  <TabsList>
+                    {optionTabs.map((option, index) => (
+                      <TabsTrigger key={option} value={option}>
+                        Option {index + 1}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                </div>
+                
+                {optionTabs.map((option) => (
+                  <TabsContent key={option} value={option} className="space-y-4">
+                    {exercisesByOption[option]?.map((exercise) => (
+                      <ExerciseItem 
+                        key={exercise.id}
+                        id={exercise.id}
+                        option={exercise.option}
+                        name={exercise.name}
+                        duration={exercise.duration}
+                        difficulty={exercise.difficulty}
+                        calories={exercise.calories}
+                        muscleGroups={exercise.muscleGroups}
+                        image={exercise.image}
+                        videoUrl={exercise.videoUrl}
+                      />
+                    ))}
+                  </TabsContent>
+                ))}
+              </Tabs>
+            ) : (
+              <div className="flex items-center justify-center h-40 bg-muted rounded-lg mb-6">
+                <p className="text-muted-foreground">No exercises available for this group</p>
+              </div>
+            )}
+          </>
+        )}
         
         <Card>
           <CardHeader>
