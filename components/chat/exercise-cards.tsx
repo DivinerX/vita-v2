@@ -135,7 +135,7 @@ export function ExerciseCards({ suggestedGroups, exercises }: ExerciseCardProps)
         >
           <div className="space-y-2">
             <div className="flex items-start gap-3">
-              <div className="relative w-16 h-16 rounded overflow-hidden flex-shrink-0 shadow-sm">
+              <div className="relative w-20 h-20 rounded overflow-hidden flex-shrink-0 shadow-sm">
                 <Image 
                   src={imageErrorMap[exercise.name] ? defaultImage : (exercise.image || defaultImage)} 
                   alt={exercise.name}
@@ -150,7 +150,7 @@ export function ExerciseCards({ suggestedGroups, exercises }: ExerciseCardProps)
                     rel="noopener noreferrer"
                     className="absolute inset-0 flex items-center justify-center bg-blue-900/50 opacity-0 hover:opacity-100 transition-opacity"
                   >
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -203,38 +203,38 @@ export function ExerciseCards({ suggestedGroups, exercises }: ExerciseCardProps)
                     {exercise.calories} cal
                   </span>
                 </div>
-              </div>
-            </div>
-            
-            <div 
-              className="
-                text-xs text-blue-700 dark:text-blue-300 
-                leading-relaxed whitespace-pre-line 
-                overflow-hidden
-                transition-all duration-300 ease-in-out
-                max-h-[3em] hover:max-h-[20em]
-              "
-            >
-              {exercise.guideline}
-            </div>
-
-            <hr className="my-1.5 border-blue-100 dark:border-blue-800/50" />
-
-            <div className="flex flex-wrap gap-1.5 text-xs">
-              <span className="text-blue-600 dark:text-blue-400 mr-1 flex items-center">
-                <svg className="w-3 h-3 mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                </svg>
-                Targets:
-              </span>
-              {exercise.muscleGroups.map(muscle => (
-                <span 
-                  key={muscle} 
-                  className="inline-flex items-center px-1.5 py-0.5 rounded-sm text-xs bg-blue-100 dark:bg-blue-800/40 text-blue-700 dark:text-blue-300"
+                
+                <div 
+                  className="
+                    text-xs text-blue-700 dark:text-blue-300 
+                    leading-relaxed whitespace-pre-line 
+                    overflow-hidden
+                    transition-all duration-300 ease-in-out
+                    max-h-[3em] hover:max-h-[20em]
+                  "
                 >
-                  {muscle}
-                </span>
-              ))}
+                  {exercise.guideline}
+                </div>
+                
+                <hr className="my-1.5 border-blue-100 dark:border-blue-800/50" />
+
+                <div className="flex flex-wrap gap-1.5 text-xs">
+                  <span className="text-blue-600 dark:text-blue-400 mr-1 flex items-center">
+                    <svg className="w-3 h-3 mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                    </svg>
+                    Targets:
+                  </span>
+                  {exercise.muscleGroups.map(muscle => (
+                    <span 
+                      key={muscle} 
+                      className="inline-flex items-center px-1.5 py-0.5 rounded-sm text-xs bg-blue-100 dark:bg-blue-800/40 text-blue-700 dark:text-blue-300"
+                    >
+                      {muscle}
+                    </span>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>

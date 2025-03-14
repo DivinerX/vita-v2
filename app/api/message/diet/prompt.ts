@@ -42,7 +42,7 @@ export const dietPrompt = (message: string, previousDiets: TExerciseGroup[]) => 
      - Detailed preparation instructions
      - Accurate nutrient information (calories, protein, carbs, fat)
      - Key health benefits
-     - High-quality, representative image URLs when available
+     - High-quality, representative image URLs using the proper Unsplash format
 
   # RESPONSE FORMAT
   Return ONLY a valid JSON object with the following structure:
@@ -74,7 +74,7 @@ export const dietPrompt = (message: string, previousDiets: TExerciseGroup[]) => 
             "fat": 14  // in grams
           },
           "benefits": ["Benefit 1", "Benefit 2", "Benefit 3"],
-          "image": "https://images.unsplash.com/valid-image-url"
+          "image": "https://images.unsplash.com/photo-[ID]?auto=format&fit=crop&w=800&q=80"
         }
       ]
     },
@@ -93,7 +93,7 @@ export const dietPrompt = (message: string, previousDiets: TExerciseGroup[]) => 
             "fat": 18 
           },
           "benefits": ["Benefit 1", "Benefit 2", "Benefit 3"],
-          "image": "https://images.unsplash.com/valid-image-url"
+          "image": "https://images.unsplash.com/photo-[ID]?auto=format&fit=crop&w=800&q=80"
         }
       ]
     },
@@ -112,7 +112,7 @@ export const dietPrompt = (message: string, previousDiets: TExerciseGroup[]) => 
             "fat": 22 
           },
           "benefits": ["Benefit 1", "Benefit 2", "Benefit 3"],
-          "image": "https://images.unsplash.com/valid-image-url"
+          "image": "https://images.unsplash.com/photo-[ID]?auto=format&fit=crop&w=800&q=80"
         }
       ]
     },
@@ -131,7 +131,7 @@ export const dietPrompt = (message: string, previousDiets: TExerciseGroup[]) => 
             "fat": 10 
           },
           "benefits": ["Benefit 1", "Benefit 2", "Benefit 3"],
-          "image": "https://images.unsplash.com/valid-image-url"
+          "image": "https://images.unsplash.com/photo-[ID]?auto=format&fit=crop&w=800&q=80"
         }
       ]
     }
@@ -140,7 +140,14 @@ export const dietPrompt = (message: string, previousDiets: TExerciseGroup[]) => 
 
   # IMPORTANT CONSTRAINTS
   - Return ONLY valid JSON - no explanations, no markdown, no additional text
-  - All image URLs must be valid Unsplash URLs
+  - All image URLs MUST follow this exact format: "https://images.unsplash.com/photo-[ID]?auto=format&fit=crop&w=800&q=80" 
+    where [ID] is a valid Unsplash photo ID (e.g., "1606787366850-de6605941022")
+  - For food images, use relevant search terms like "healthy breakfast", "salmon dinner", etc.
+  - If unsure about specific image IDs, use these reliable Unsplash photo IDs:
+    * Breakfast: "1606787366850-de6605941022" (oatmeal), "1525351484163-7529414344d8" (avocado toast)
+    * Lunch: "1546069901-ba9599a7e63c" (salad), "1565299624946-b28f40a0ae38" (healthy lunch)
+    * Dinner: "1467003909585-2f618aab6256" (salmon), "1559847844-5315695dadae" (chicken and vegetables)
+    * Snacks: "1505253716362-afaea1d3d1af" (nuts), "1488477181946-6428a0291777" (fruit)
   - Food descriptions must include preparation methods and key ingredients
   - Nutrient values must be realistic integers based on portion sizes
   - Benefits must be evidence-based and relevant to the food

@@ -113,7 +113,7 @@ export function DietCards({ diets, suggestedGroups }: DietCardsProps) {
               group.existing 
                 ? "border-pink-300 text-pink-700 hover:bg-pink-100 dark:border-pink-700 dark:text-pink-400 dark:hover:bg-pink-900/20" 
                 : "bg-pink-500 hover:bg-pink-600 text-white dark:bg-pink-700 dark:hover:bg-pink-600"
-            }`}
+            } relative`}
             onClick={() => handleSaveDietGroup(group.name)}
             disabled={savingGroup === group.name}
           >
@@ -122,7 +122,9 @@ export function DietCards({ diets, suggestedGroups }: DietCardsProps) {
             ) : group.existing ? (
               <Check className="h-3 w-3 mr-1" />
             ) : (
-              <Plus className="h-3 w-3 mr-1" />
+              <span className="absolute -top-2 -right-2 bg-white text-pink-600 text-[9px] px-1.5 rounded-full shadow-sm border border-pink-200 overflow-hidden">
+                New
+              </span>
             )}
             {group.name}
           </Button>
