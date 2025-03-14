@@ -14,7 +14,7 @@ import { motion } from "framer-motion";
 import { TRelativeCategory, THabit } from "@/types";
 import { TExercise } from "@/types/exercise";
 import api from "@/config/axios";
-import { RelativeCard } from "@/components/chat/relative-card";
+import { RelativeCard } from "@/components/chat/relative-cards";
 import { HabitCard } from "@/components/chat/habit-cards";
 import { ExerciseCards } from "@/components/chat/exercise-cards";
 
@@ -142,7 +142,7 @@ export default function ChatPage() {
   return (
     <AnimatedGradientBackground className="flex flex-col h-screen bg-background">
       {/* Header */}
-      <header className="flex items-center justify-between p-4 border-b bg-background/80 backdrop-blur-sm">
+      <header className="flex items-center justify-between p-4 border-b bg-background/80 backdrop-blur-sm dark:border-gray-800">
         <div className="flex items-center gap-2">
           <MessageSquare className="h-5 w-5 text-primary" />
           <h1 className="font-semibold text-lg">Chat with {vitaName}</h1>
@@ -183,9 +183,9 @@ export default function ChatPage() {
               transition={{ duration: 0.3 }}
             >
               <div className="flex space-x-1">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></div>
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></div>
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></div>
+                <div className="w-2 h-2 bg-green-500 dark:bg-green-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></div>
+                <div className="w-2 h-2 bg-green-500 dark:bg-green-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></div>
+                <div className="w-2 h-2 bg-green-500 dark:bg-green-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></div>
               </div>
               <span className="text-sm">{vitaName} is typing...</span>
             </motion.div>
@@ -224,7 +224,7 @@ export default function ChatPage() {
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <div className="relative h-full">
-                <div className="absolute -top-10 -left-10 w-24 h-24 bg-gradient-to-r from-green-200 to-blue-200 rounded-full opacity-20 blur-xl animate-pulse"></div>
+                <div className="absolute -top-10 -left-10 w-24 h-24 bg-gradient-to-r from-green-200 to-blue-200 dark:from-green-900/30 dark:to-blue-900/30 rounded-full opacity-20 blur-xl animate-pulse"></div>
                 <QuickActionCard
                   title="Lose Weight"
                   description="Create a personalized plan to reach your ideal weight"
@@ -236,7 +236,7 @@ export default function ChatPage() {
                 />
               </div>
               <div className="relative h-full">
-                <div className="absolute -bottom-10 -right-10 w-24 h-24 bg-gradient-to-r from-blue-200 to-purple-200 rounded-full opacity-20 blur-xl animate-pulse"></div>
+                <div className="absolute -bottom-10 -right-10 w-24 h-24 bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-900/30 dark:to-purple-900/30 rounded-full opacity-20 blur-xl animate-pulse"></div>
                 <QuickActionCard
                   title="Improve Sleep"
                   description="Develop better sleep habits for more energy"
@@ -248,7 +248,7 @@ export default function ChatPage() {
                 />
               </div>
               <div className="relative h-full">
-                <div className="absolute -bottom-10 right-10 w-24 h-24 bg-gradient-to-r from-blue-200 to-purple-200 rounded-full opacity-20 blur-xl animate-pulse"></div>
+                <div className="absolute -bottom-10 right-10 w-24 h-24 bg-gradient-to-r from-blue-200 to-purple-200 dark:from-blue-900/30 dark:to-purple-900/30 rounded-full opacity-20 blur-xl animate-pulse"></div>
                 <QuickActionCard
                   title="Get Fit"
                   description="Create a personalized workout plan to reach fitness goals"
@@ -260,7 +260,7 @@ export default function ChatPage() {
                 />
               </div>
               <div className="relative h-full">
-                <div className="absolute -top-10 -left-10 w-24 h-24 bg-gradient-to-r from-green-200 to-blue-200 rounded-full opacity-20 blur-xl animate-pulse"></div>
+                <div className="absolute -top-10 -left-10 w-24 h-24 bg-gradient-to-r from-green-200 to-blue-200 dark:from-green-900/30 dark:to-blue-900/30 rounded-full opacity-20 blur-xl animate-pulse"></div>
                 <QuickActionCard
                   title="Manage Stress"
                   description="Find ways to reduce stress in your life"
@@ -277,7 +277,7 @@ export default function ChatPage() {
       </div>
 
       {/* Suggestion Chips */}
-      <div className="px-4 py-2 bg-background/80 backdrop-blur-sm">
+      <div className="px-4 py-2 bg-background/80 backdrop-blur-sm dark:border-t dark:border-gray-800">
         <motion.div
           className="flex flex-wrap gap-2"
           initial={{ opacity: 0, y: 10 }}
@@ -301,7 +301,7 @@ export default function ChatPage() {
       </div>
 
       {/* Input Area */}
-      <div className="p-4 border-t bg-background/90 backdrop-blur-md">
+      <div className="p-4 border-t bg-background/90 backdrop-blur-md dark:border-gray-800">
         <motion.div
           className="flex gap-2"
           initial={{ opacity: 0, y: 20 }}
@@ -322,7 +322,7 @@ export default function ChatPage() {
           />
           <Button
             onClick={handleSendMessage}
-            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-md"
+            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 dark:from-green-600 dark:to-green-700 dark:hover:from-green-700 dark:hover:to-green-800 text-white shadow-md"
           >
             <Send className="h-4 w-4" />
           </Button>

@@ -2,7 +2,9 @@ import { TRelativeCategory, THabit } from "@/types";
 import { TExercise } from "@/types/exercise";
 import { Dumbbell, ForkKnife, Bed, Loader2 } from "lucide-react";
 import api from "@/config/axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
+
 interface RelativeCardProps {
   relative: TRelativeCategory;
   setHabits: (habits: THabit[]) => void;
@@ -15,9 +17,16 @@ const relatives = {
     title: "Diet",
     description: "Create a personalized diet plan to reach your goals",
     icon: <ForkKnife className="h-6 w-6" />,
-    bgColor: "#FFE0E6",
-    textColor: "#FF1744",
-    borderColor: "#FF4081",
+    lightTheme: {
+      bgColor: "#FFE0E6",
+      textColor: "#FF1744",
+      borderColor: "#FF4081",
+    },
+    darkTheme: {
+      bgColor: "#3D1A20",
+      textColor: "#FF6E8A",
+      borderColor: "#FF4081",
+    },
     onClick: async () => {
       const response = await api.post("/message/diet");
       return response;
@@ -27,9 +36,16 @@ const relatives = {
     title: "Exercise",
     description: "Create a personalized exercise plan to reach your goals",
     icon: <Dumbbell className="h-6 w-6" />,
-    bgColor: "#E0F7FA",
-    textColor: "#00B8D4",
-    borderColor: "#00E5FF",
+    lightTheme: {
+      bgColor: "#E0F7FA",
+      textColor: "#00B8D4",
+      borderColor: "#00E5FF",
+    },
+    darkTheme: {
+      bgColor: "#0A2A2D",
+      textColor: "#4DCFE7",
+      borderColor: "#00E5FF",
+    },
     onClick: async () => {
       const response = await api.post("/message/exercise");
       return response;
@@ -39,9 +55,16 @@ const relatives = {
     title: "Habit",
     description: "Create a personalized habit plan to reach your goals",
     icon: <Bed className="h-6 w-6" />,
-    bgColor: "#E8F5E9",
-    textColor: "#00C853",
-    borderColor: "#69F0AE",
+    lightTheme: {
+      bgColor: "#E8F5E9",
+      textColor: "#00C853",
+      borderColor: "#69F0AE",
+    },
+    darkTheme: {
+      bgColor: "#0F2912",
+      textColor: "#5CDD7D",
+      borderColor: "#69F0AE",
+    },
     onClick: async () => {
       const response = await api.post("/message/habit");
       return response;
@@ -51,12 +74,19 @@ const relatives = {
 
 export function RelativeCard({ relative, setHabits, setExercises, setExerciseGroupSuggestions }: RelativeCardProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const { theme } = useTheme();
+  const [themeColors, setThemeColors] = useState(relatives[relative].lightTheme);
+  
+  useEffect(() => {
+    setThemeColors(theme === 'dark' ? relatives[relative].darkTheme : relatives[relative].lightTheme);
+  }, [theme, relative]);
+
   return (
     <div
-      className="group relative cursor-pointer rounded-xl p-6 transition-all duration-300 hover:-translate-y-1"
+      className="group relative cursor-pointer rounded-xl p-6 transition-all duration-300 hover:-translate-y-1 dark:text-white"
       style={{
-        backgroundColor: relatives[relative].bgColor,
-        border: `1px solid ${relatives[relative].borderColor}`,
+        backgroundColor: themeColors.bgColor,
+        border: `1px solid ${themeColors.borderColor}`,
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
         opacity: isLoading ? 0.5 : 1,
         cursor: isLoading ? 'not-allowed' : 'pointer'
@@ -84,28 +114,28 @@ export function RelativeCard({ relative, setHabits, setExercises, setExerciseGro
       }}
     >
       {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/5">
-          <Loader2 className="h-6 w-6 animate-spin" style={{ color: relatives[relative].textColor }} />
+        <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/5 dark:bg-white/5">
+          <Loader2 className="h-6 w-6 animate-spin" style={{ color: themeColors.textColor }} />
         </div>
       )}
       <div className="flex items-center gap-3 mb-3">
         <div
           className="p-2 rounded-lg transition-colors duration-300"
           style={{
-            backgroundColor: `${relatives[relative].borderColor}40`,
-            color: relatives[relative].textColor
+            backgroundColor: `${themeColors.borderColor}40`,
+            color: themeColors.textColor
           }}
         >
           {relatives[relative].icon}
         </div>
         <h3
           className="text-xl font-semibold tracking-tight"
-          style={{ color: relatives[relative].textColor }}
+          style={{ color: themeColors.textColor }}
         >
           {relatives[relative].title}
         </h3>
       </div>
-      <p className="text-sm text-gray-600 leading-relaxed">
+      <p className="text-sm leading-relaxed dark:text-gray-300 text-gray-600">
         {relatives[relative].description}
       </p>
     </div>

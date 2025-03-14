@@ -39,11 +39,11 @@ export function ChatMessage({ message, vitaName }: ChatMessageProps) {
       <div className={cn(
         "group relative max-w-[80%] rounded-lg px-3 py-2 text-sm",
         isAssistant
-          ? "bg-gradient-to-r from-green-50 to-green-100 text-gray-800"
-          : "bg-primary text-primary-foreground"
+          ? "bg-green-50 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-green-200 dark:border-green-100"
+          : "bg-pink-50 dark:bg-pink-800 text-gray-800 dark:text-gray-200 border border-pink-200 dark:border-pink-100"
       )}>
         {isAssistant && (
-          <div className="font-medium text-green-600 mb-1">
+          <div className="font-medium text-green-600 dark:text-green-400 mb-1">
             {vitaName}
           </div>
         )}
@@ -56,14 +56,17 @@ export function ChatMessage({ message, vitaName }: ChatMessageProps) {
             ul: ({ node, ...props }) => <ul className="list-disc ml-4" {...props} />,
             ol: ({ node, ...props }) => <ol className="list-decimal ml-4" {...props} />,
             strong: ({ node, ...props }) => <strong className="font-bold" {...props} />,
+            p: ({ node, ...props }) => <p className="text-gray-800 dark:text-gray-200" {...props} />,
+            a: ({ node, ...props }) => <a className="text-blue-600 dark:text-blue-400 underline" {...props} />,
+            code: ({ node, ...props }) => <code className="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded" {...props} />,
           }}
         >
           {message.content}
         </ReactMarkdown>
 
         <div className={cn(
-          "text-xs mt-1 opacity-70",
-          isAssistant ? "text-gray-600" : "text-gray-300"
+          "text-xs mt-1",
+          isAssistant ? "text-gray-500 dark:text-gray-400" : "text-gray-300 dark:text-gray-400"
         )}>
           {format(new Date(message.timestamp), 'h:mm a')}
         </div>
