@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import api from "@/config/axios";
 import { toast } from "sonner";
 import Image from "next/image";
@@ -25,6 +25,33 @@ export function ExerciseCards({ suggestedGroups, exercises }: ExerciseCardProps)
   const [imageErrorMap, setImageErrorMap] = useState<Record<string, boolean>>({});
   
   const defaultImage = DEFAULT_EXERCISE_IMAGE; // Default image from Upstash
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Function to scroll to bottom of page
+  const scrollToBottom = () => {
+    const scrollingElement = document.scrollingElement || document.body;
+    scrollingElement.scrollTop = scrollingElement.scrollHeight;
+  };
+
+  // Scroll when exercises are loaded
+  useEffect(() => {
+    if (exercises.length > 0) {
+      // Use requestAnimationFrame to ensure DOM is updated
+      requestAnimationFrame(() => {
+        setTimeout(scrollToBottom, 100);
+      });
+    }
+  }, [exercises]);
+
+  // Scroll when exercises are added
+  useEffect(() => {
+    if (added) {
+      // Use requestAnimationFrame to ensure DOM is updated
+      requestAnimationFrame(() => {
+        setTimeout(scrollToBottom, 300);
+      });
+    }
+  }, [added]);
 
   const handleToggleExercise = (exerciseName: string) => {
     setCheckedExercises(prev => ({
@@ -43,7 +70,10 @@ export function ExerciseCards({ suggestedGroups, exercises }: ExerciseCardProps)
     try {
       await api.post("/exercise", { 
         exercises: selectedExercises,
-        group_name: selectedGroup
+        exerciseGroup: {
+          name: selectedGroup,
+          existing: suggestedGroups.find(group => group.name === selectedGroup)?.existing || false
+        }
       });
       selectedExercises.forEach(exercise => {
         setAddedMap(prev => ({ ...prev, [exercise.name]: true }));
@@ -51,6 +81,11 @@ export function ExerciseCards({ suggestedGroups, exercises }: ExerciseCardProps)
       setAdded(true);
       toast.success(`${selectedExercises.length} exercise(s) added to your plan`);
       setCheckedExercises({});
+      
+      // Scroll after adding exercises
+      requestAnimationFrame(() => {
+        setTimeout(scrollToBottom, 500);
+      });
     } catch (error) {
       console.error(error);
       toast.error("Failed to add exercises");
@@ -65,7 +100,10 @@ export function ExerciseCards({ suggestedGroups, exercises }: ExerciseCardProps)
     .length;
 
   return (
-    <div className="grid gap-3 mt-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 border border-blue-200 dark:border-blue-700 shadow-sm">
+    <div 
+      ref={containerRef}
+      className="grid gap-3 mt-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4 border border-blue-200 dark:border-blue-700 shadow-sm"
+    >
       <div className="flex justify-between items-center">
         <h2 className="text-md font-semibold text-blue-700 dark:text-blue-200">Suggested Exercise Plan</h2>
         <button 
@@ -202,7 +240,15 @@ export function ExerciseCards({ suggestedGroups, exercises }: ExerciseCardProps)
               </div>
             </div>
             
-            <div className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line line-clamp-2 hover:line-clamp-none transition-all duration-200">
+            <div 
+              className="
+                text-xs text-gray-600 dark:text-gray-300 
+                leading-relaxed whitespace-pre-line 
+                overflow-hidden
+                transition-all duration-300 ease-in-out
+                max-h-[3em] hover:max-h-[20em]
+              "
+            >
               {exercise.guideline}
             </div>
 

@@ -17,7 +17,7 @@ export type TExercise = {
   image?: string;
   completed?: boolean;
   videoUrl?: string;
-  option: number;
+  option: string;
   user_id?: string;
   group_id?: string;
 }
