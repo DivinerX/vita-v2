@@ -13,10 +13,12 @@ import { AnimatedGradientBackground } from "@/components/ui/animated-gradient-ba
 import { motion } from "framer-motion";
 import { TRelativeCategory, THabit } from "@/types";
 import { TExercise } from "@/types/exercise";
+import { TDiet } from "@/types/diet";
 import api from "@/config/axios";
 import { RelativeCard } from "@/components/chat/relative-cards";
 import { HabitCard } from "@/components/chat/habit-cards";
 import { ExerciseCards } from "@/components/chat/exercise-cards";
+import { DietCards } from "@/components/chat/diet-cards";
 
 interface Message {
   id: string;
@@ -39,6 +41,8 @@ export default function ChatPage() {
   const [habits, setHabits] = useState<THabit[]>([]);
   const [exercises, setExercises] = useState<TExercise[]>([]);
   const [exerciseGroupSuggestions, setExerciseGroupSuggestions] = useState<{ name: string, existing: boolean }[]>([]);
+  const [diets, setDiets] = useState<TDiet[]>([]);
+  const [dietGroupSuggestions, setDietGroupSuggestions] = useState<{ name: string, existing: boolean }[]>([]);
   const messageContainerRef = useRef<HTMLDivElement>(null);
 
   const suggestions = [
@@ -202,6 +206,8 @@ export default function ChatPage() {
                   setHabits={setHabits}
                   setExercises={setExercises}
                   setExerciseGroupSuggestions={setExerciseGroupSuggestions}
+                  setDiets={setDiets}
+                  setDietGroupSuggestions={setDietGroupSuggestions}
                 />
               ))}
             </motion.div>
@@ -213,6 +219,10 @@ export default function ChatPage() {
 
           {exercises.length > 0 && messages[messages.length - 1].role === "assistant" && (
             <ExerciseCards exercises={exercises} suggestedGroups={exerciseGroupSuggestions} />
+          )}
+
+          {diets.length > 0 && messages[messages.length - 1].role === "assistant" && (
+            <DietCards diets={diets} suggestedGroups={dietGroupSuggestions} />
           )}
 
           {/* Goal cards appear if there are no messages yet */}

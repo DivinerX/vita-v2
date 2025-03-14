@@ -4,12 +4,15 @@ import { Dumbbell, ForkKnife, Bed, Loader2 } from "lucide-react";
 import api from "@/config/axios";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
+import { TDiet } from "@/types/diet";
 
 interface RelativeCardProps {
   relative: TRelativeCategory;
   setHabits: (habits: THabit[]) => void;
   setExercises: (exercises: TExercise[]) => void;
   setExerciseGroupSuggestions: (exerciseGroupSuggestions: { name: string, existing: boolean }[]) => void;
+  setDiets: (diets: TDiet[]) => void;
+  setDietGroupSuggestions: (dietGroupSuggestions: { name: string, existing: boolean }[]) => void;
 }
 
 const relatives = {
@@ -72,7 +75,7 @@ const relatives = {
   }
 }
 
-export function RelativeCard({ relative, setHabits, setExercises, setExerciseGroupSuggestions }: RelativeCardProps) {
+export function RelativeCard({ relative, setHabits, setExercises, setExerciseGroupSuggestions, setDiets, setDietGroupSuggestions }: RelativeCardProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { theme } = useTheme();
   const [themeColors, setThemeColors] = useState(relatives[relative].lightTheme);
@@ -105,6 +108,9 @@ export function RelativeCard({ relative, setHabits, setExercises, setExerciseGro
           } else if (relative === "exercise") {
             setExercises(response.data.exercises);
             setExerciseGroupSuggestions(response.data.suggestedGroups);
+          } else if (relative === "diet") {
+            setDiets(response.data.diets);
+            setDietGroupSuggestions(response.data.suggestedGroups);
           }
         } catch (error) {
           console.error(error);

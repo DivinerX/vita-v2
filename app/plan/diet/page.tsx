@@ -7,6 +7,7 @@ import { ArrowLeft, ChevronLeft, ChevronRight, Utensils, Citrus as Fruit } from 
 import Link from "next/link";
 
 interface MealProps {
+  type: string;
   title: string;
   time: string;
   foods: {
@@ -23,7 +24,7 @@ interface MealProps {
   }[];
 }
 
-function Meal({ title, time, foods }: MealProps) {
+function Meal({ type, title, time, foods }: MealProps) {
   return (
     <Card className="mb-6">
       <CardHeader className="pb-2">
@@ -218,10 +219,10 @@ export default function DietPlanPage() {
           </div>
           
           <TabsContent value="day1" className="space-y-4">
-            <Meal {...meals.breakfast} />
-            <Meal {...meals.lunch} />
-            <Meal {...meals.dinner} />
-            <Meal {...meals.snacks} />
+            <Meal type="breakfast" {...meals.breakfast} />
+            <Meal type="lunch" {...meals.lunch} />
+            <Meal type="dinner" {...meals.dinner} />
+            <Meal type="snack" {...meals.snacks} />
           </TabsContent>
           
           <TabsContent value="day2">

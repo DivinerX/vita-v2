@@ -35,6 +35,7 @@ export const exercisePrompt = (message: string, previousExercises: TExerciseGrou
      - Create descriptive, motivating names for new groups
      - Group exercises by function (strength, cardio, flexibility) or body region
      - If the user has already done the group, set the "existing" field to true
+     
   4. EXERCISE DETAILS MUST INCLUDE:
      - Clear, step-by-step instructions
      - Appropriate duration based on exercise type
