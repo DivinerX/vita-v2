@@ -54,6 +54,7 @@ export const authOptions: NextAuthOptions = {
           access_token: account.access_token
         });
 
+        console.log("data from google", data)
         const { error: profileError } = await supabase
           .from("profiles")
           .insert({

@@ -20,14 +20,14 @@ export async function POST(request: NextRequest) {
     const { data: existingProfile, error: fetchError } = await supabase
       .from("profiles")
       .select()
-      .eq("user_id", data.user.id)
-      .single();
+      .eq("user_id", data.user.id);
 
     if (fetchError) {
       return NextResponse.json({ error: fetchError.message }, { status: 500 });
     }
     let userError;
-    if (existingProfile) {
+    console.log("existingProfile", existingProfile);
+    if (existingProfile.length > 0) {
       // Update existing profile
       const { error: updateError } = await supabase
         .from("profiles")
@@ -35,7 +35,8 @@ export async function POST(request: NextRequest) {
           vita_name: vitaName,
           vita_tone: vitaTone,
         })
-        .eq("user_id", data.user.id);
+        .eq("user_id", data.user.id)
+        
       userError = updateError;
     } else {
       // Insert new profile
