@@ -41,7 +41,7 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: "jwt",
-    maxAge: 60 * 60 * 24, // 24 hours in seconds
+    maxAge: 60 * 60 * 24,
   },
   callbacks: {
     async signIn({ user, account }) {
@@ -87,6 +87,12 @@ export const authOptions: NextAuthOptions = {
         token.accessToken = account.access_token;
       }
       return token;
+    },
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith(baseUrl)) {
+        return `${baseUrl}/dashboard`;
+      }
+      return url.startsWith(baseUrl) ? url : baseUrl;
     },
   },
   pages: {
