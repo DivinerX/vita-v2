@@ -39,6 +39,10 @@ export const authOptions: NextAuthOptions = {
       }
     })
   ],
+  session: {
+    strategy: "jwt",
+    maxAge: 60 * 60 * 24, // 24 hours in seconds
+  },
   callbacks: {
     async signIn({ user, account }) {
       if (!account || !user) return false;
@@ -49,10 +53,20 @@ export const authOptions: NextAuthOptions = {
           token: account.id_token!,
           access_token: account.access_token
         });
-        console.log("data from google", data)
 
+        const { error: profileError } = await supabase
+          .from("profiles")
+          .insert({
+            user_id: data!.user!.id,
+            vita_name: "vita",
+            vita_tone: "assistant"
+          });
         if (error) {
           console.error('Supabase sign in error:', error);
+          return false;
+        }
+        if (profileError) {
+          console.error('Supabase profile creation error:', profileError);
           return false;
         }
       }
