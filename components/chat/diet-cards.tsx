@@ -39,21 +39,28 @@ interface DietCardsProps {
 export function DietCards({ diets, suggestedGroups }: DietCardsProps) {
   const [selectedTab, setSelectedTab] = useState(diets[0]?.type || "breakfast");
   const [savingGroup, setSavingGroup] = useState<string | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
 
-  const handleSaveDietGroup = async (groupName: string) => {
-    setSavingGroup(groupName);
+  const handleSaveDietGroup = async () => {
+    if (!selectedGroup) return;
+    
+    setSavingGroup(selectedGroup);
     try {
       await api.post("/diet/group", {
-        name: groupName,
+        name: selectedGroup,
         diets: diets
       });
-      // Update the UI to show the group is now saved
-      // This would typically involve updating state in the parent component
+      // Success message or notification could be added here
     } catch (error) {
       console.error("Failed to save diet group:", error);
     } finally {
       setSavingGroup(null);
+      setSelectedGroup(null); // Reset selection after saving
     }
+  };
+
+  const handleChangeMeal = () => {
+    console.log("Change Meal");
   };
 
   const getFallbackImage = (mealType: string) => {
@@ -102,33 +109,56 @@ export function DietCards({ diets, suggestedGroups }: DietCardsProps) {
       
       <hr className="border-pink-200 dark:border-pink-800/30" />
       
-      <div className="flex flex-wrap gap-1.5 mb-3">
-        <p className="text-xs text-pink-700 dark:text-pink-300 mb-1 w-full">Save this plan to your collection:</p>
-        {suggestedGroups.map((group) => (
+      <div className="mb-3">
+        <p className="text-xs text-pink-700 dark:text-pink-300 mb-2">Select a collection to save this plan to:</p>
+        <div className="flex items-center gap-3">
+          <div className="flex-1 flex flex-wrap gap-1.5">
+            {suggestedGroups.map((group) => (
+              <Button
+                key={group.name}
+                variant={selectedGroup === group.name ? "default" : "outline"}
+                size="sm"
+                className={`flex items-center gap-1 text-xs h-7 px-2 ${
+                  selectedGroup === group.name
+                    ? "bg-pink-500 text-white dark:bg-pink-700"
+                    : "border-pink-300 text-pink-700 hover:bg-pink-100 dark:border-pink-700 dark:text-pink-400 dark:hover:bg-pink-900/20"
+                } relative`}
+                onClick={() => setSelectedGroup(group.name)}
+                disabled={savingGroup !== null}
+              >
+                {selectedGroup === group.name && (
+                  <Check className="h-3 w-3 mr-1" />
+                )}
+                {group.name}
+                {!group.existing && (
+                  <span className="absolute -top-2 -right-2 bg-white text-pink-600 text-[9px] px-1.5 rounded-full shadow-sm border border-pink-200 overflow-hidden">
+                    New
+                  </span>
+                )}
+              </Button>
+            ))}
+          </div>
+          
           <Button
-            key={group.name}
-            variant={group.existing ? "outline" : "default"}
+            variant="default"
             size="sm"
-            className={`flex items-center gap-1 text-xs h-7 px-2 ${
-              group.existing 
-                ? "border-pink-300 text-pink-700 hover:bg-pink-100 dark:border-pink-700 dark:text-pink-400 dark:hover:bg-pink-900/20" 
-                : "bg-pink-500 hover:bg-pink-600 text-white dark:bg-pink-700 dark:hover:bg-pink-600"
-            } relative`}
-            onClick={() => handleSaveDietGroup(group.name)}
-            disabled={savingGroup === group.name}
+            className="flex items-center gap-1 bg-pink-600 hover:bg-pink-700 text-white dark:bg-pink-700 dark:hover:bg-pink-800 shrink-0 whitespace-nowrap"
+            onClick={handleSaveDietGroup}
+            disabled={!selectedGroup || savingGroup !== null}
           >
-            {savingGroup === group.name ? (
-              <Loader2 className="h-3 w-3 animate-spin mr-1" />
-            ) : group.existing ? (
-              <Check className="h-3 w-3 mr-1" />
+            {savingGroup ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                Saving...
+              </>
             ) : (
-              <span className="absolute -top-2 -right-2 bg-white text-pink-600 text-[9px] px-1.5 rounded-full shadow-sm border border-pink-200 overflow-hidden">
-                New
-              </span>
+              <>
+                <Plus className="h-4 w-4 mr-1" />
+                {selectedGroup ? `Save to "${selectedGroup}"` : "Save to..."}
+              </>
             )}
-            {group.name}
           </Button>
-        ))}
+        </div>
       </div>
 
       <Tabs defaultValue={selectedTab} onValueChange={setSelectedTab} className="w-full">
@@ -232,20 +262,13 @@ export function DietCards({ diets, suggestedGroups }: DietCardsProps) {
                     </CardContent>
                     <CardFooter className="p-0 pt-1.5 flex justify-end">
                       <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="flex items-center gap-1 h-7 text-xs border-pink-300 text-pink-700 hover:bg-pink-50 hover:text-pink-800 dark:border-pink-700 dark:text-pink-400 dark:hover:bg-pink-900/20 mr-2"
-                      >
-                        <Utensils className="h-3 w-3 mr-1" />
-                        Add to Meal Plan
-                      </Button>
-                      <Button 
                         variant="default" 
                         size="sm" 
                         className="flex items-center gap-1 h-7 text-xs bg-pink-500 hover:bg-pink-600 text-white dark:bg-pink-700 dark:hover:bg-pink-600"
+                        onClick={handleChangeMeal}
                       >
                         <Sparkles className="h-3 w-3 mr-1" />
-                        View Recipe
+                        Change Meal
                       </Button>
                     </CardFooter>
                   </div>
