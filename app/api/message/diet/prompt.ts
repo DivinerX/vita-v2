@@ -60,8 +60,7 @@ export const dietPrompt = (message: string, previousDiets: TExerciseGroup[]) => 
     ],
     "diets": [
       {
-        "type": "breakfast",
-      "title": "Breakfast",
+      "type": "breakfast",
       "time": "7:00 - 8:30 AM",
       "foods": [
         {
@@ -80,7 +79,6 @@ export const dietPrompt = (message: string, previousDiets: TExerciseGroup[]) => 
     },
     {
       "type": "lunch",
-      "title": "Lunch",
       "time": "12:00 - 1:30 PM",
       "foods": [
         {
@@ -99,7 +97,6 @@ export const dietPrompt = (message: string, previousDiets: TExerciseGroup[]) => 
     },
     {
       "type": "dinner",
-      "title": "Dinner",
       "time": "6:30 - 8:00 PM",
       "foods": [
         {
@@ -118,7 +115,6 @@ export const dietPrompt = (message: string, previousDiets: TExerciseGroup[]) => 
     },
     {
       "type": "snack",
-      "title": "Snack",
       "time": "Between meals",
       "foods": [
         {

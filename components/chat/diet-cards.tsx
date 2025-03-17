@@ -38,16 +38,15 @@ interface DietCardsProps {
 
 export function DietCards({ diets, suggestedGroups }: DietCardsProps) {
   const [selectedTab, setSelectedTab] = useState(diets[0]?.type || "breakfast");
-  const [savingGroup, setSavingGroup] = useState<string | null>(null);
-  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
+  const [savingGroup, setSavingGroup] = useState<{ name: string, existing: boolean } | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState<{ name: string, existing: boolean } | null>(null);
 
-  const handleSaveDietGroup = async () => {
+  const handleSaveDiet = async () => {
     if (!selectedGroup) return;
     
-    setSavingGroup(selectedGroup);
     try {
-      await api.post("/diet/group", {
-        name: selectedGroup,
+      await api.post("/diet", {
+        group: selectedGroup,
         diets: diets
       });
       // Success message or notification could be added here
@@ -116,17 +115,17 @@ export function DietCards({ diets, suggestedGroups }: DietCardsProps) {
             {suggestedGroups.map((group) => (
               <Button
                 key={group.name}
-                variant={selectedGroup === group.name ? "default" : "outline"}
+                variant={selectedGroup?.name === group.name ? "default" : "outline"}
                 size="sm"
                 className={`flex items-center gap-1 text-xs h-7 px-2 ${
-                  selectedGroup === group.name
+                  selectedGroup?.name === group.name
                     ? "bg-pink-500 text-white dark:bg-pink-700"
                     : "border-pink-300 text-pink-700 hover:bg-pink-100 dark:border-pink-700 dark:text-pink-400 dark:hover:bg-pink-900/20"
                 } relative`}
-                onClick={() => setSelectedGroup(group.name)}
+                onClick={() => setSelectedGroup(group)}
                 disabled={savingGroup !== null}
               >
-                {selectedGroup === group.name && (
+                {selectedGroup?.name === group.name && (
                   <Check className="h-3 w-3 mr-1" />
                 )}
                 {group.name}
@@ -143,7 +142,7 @@ export function DietCards({ diets, suggestedGroups }: DietCardsProps) {
             variant="default"
             size="sm"
             className="flex items-center gap-1 bg-pink-600 hover:bg-pink-700 text-white dark:bg-pink-700 dark:hover:bg-pink-800 shrink-0 whitespace-nowrap"
-            onClick={handleSaveDietGroup}
+            onClick={handleSaveDiet}
             disabled={!selectedGroup || savingGroup !== null}
           >
             {savingGroup ? (

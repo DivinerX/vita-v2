@@ -14,7 +14,6 @@ export type TFood = {
 
 export type TDiet = {
   type: string;
-  title: string;
   time: string;
   foods: TFood[];
 };

@@ -2,7 +2,7 @@ import { supabase } from "@/config/supabase";
 import { OpenAIService } from "@/services/OpenAIService";
 import { generateExerciseGroupPrompt } from "./prompt";
 import { TExercise } from "@/types/exercise";
-import { randomUUID } from "crypto";
+
 export const getAllExercisesbyGroup = async ({ user_id }: { user_id: string }) => {
   const { data, error } = await supabase
     .from("exercise_groups")
