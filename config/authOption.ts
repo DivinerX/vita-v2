@@ -76,16 +76,42 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.sub;
+        session.user.id = token.sub as string;
+        
+        if (token.provider === 'google' && token.supabaseUserId) {
+          session.user.id = token.supabaseUserId as string;
+        }
+        
         if (token.accessToken) {
           session.accessToken = token.accessToken as string;
         }
       }
       return session;
     },
-    async jwt({ token, account }) {
+    async jwt({ token, account, user }) {
       if (account) {
         token.accessToken = account.access_token;
+        token.provider = account.provider;
+        
+        if (user) {
+          token.providerId = user.id;
+        }
+        
+        if (account.provider === 'google' && account.id_token) {
+          try {
+            const { data } = await supabase.auth.signInWithIdToken({
+              provider: 'google',
+              token: account.id_token,
+              access_token: account.access_token
+            });
+            
+            if (data?.user?.id) {
+              token.supabaseUserId = data.user.id;
+            }
+          } catch (error) {
+            console.error('Error getting Supabase user ID:', error);
+          }
+        }
       }
       return token;
     },
