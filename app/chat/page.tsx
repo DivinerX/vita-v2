@@ -4,14 +4,14 @@ import { useState, useEffect, useRef, Suspense } from "react";
 import { MessageSquare, Send, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ChatMessage } from "@/components/chat/chat-message";
-import { QuickActionCard } from "@/components/chat/quick-action-card";
-import { ToneIndicator } from "@/components/chat/tone-indicator";
 import { SuggestionChip } from "@/components/chat/suggestion-chip";
 import { useSearchParams } from "next/navigation";
 import { AnimatedGradientBackground } from "@/components/ui/animated-gradient-background";
 import { motion } from "framer-motion";
 import { TRelativeCategory, THabit } from "@/types";
+import { ChatMessage } from "@/components/chat/chat-message";
+import { QuickActionCard } from "@/components/chat/quick-action-card";
+import { ToneIndicator } from "@/components/chat/tone-indicator";
 import { TExercise } from "@/types/exercise";
 import { TDiet } from "@/types/diet";
 import api from "@/config/axios";
@@ -41,7 +41,7 @@ function ChatComponent() {
   const [habits, setHabits] = useState<THabit[]>([]);
   const [exercises, setExercises] = useState<TExercise[]>([]);
   const [exerciseGroupSuggestions, setExerciseGroupSuggestions] = useState<{ name: string, existing: boolean }[]>([]);
-  const [diets, setDiets] = useState<TDiet[]>([]);
+  const [diet, setDiet] = useState<TDiet>();
   const [dietGroupSuggestions, setDietGroupSuggestions] = useState<{ name: string, existing: boolean }[]>([]);
   const messageContainerRef = useRef<HTMLDivElement>(null);
 
@@ -206,7 +206,7 @@ function ChatComponent() {
                   setHabits={setHabits}
                   setExercises={setExercises}
                   setExerciseGroupSuggestions={setExerciseGroupSuggestions}
-                  setDiets={setDiets}
+                  setDiet={setDiet}
                   setDietGroupSuggestions={setDietGroupSuggestions}
                 />
               ))}
@@ -221,8 +221,8 @@ function ChatComponent() {
             <ExerciseCards exercises={exercises} suggestedGroups={exerciseGroupSuggestions} />
           )}
 
-          {diets.length > 0 && messages[messages.length - 1].role === "assistant" && (
-            <DietCards diets={diets} suggestedGroups={dietGroupSuggestions} />
+          {diet && messages[messages.length - 1].role === "assistant" && (
+            <DietCards diet={diet} suggestedGroups={dietGroupSuggestions} />
           )}
 
           {/* Goal cards appear if there are no messages yet */}

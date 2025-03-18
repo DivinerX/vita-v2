@@ -11,7 +11,7 @@ interface RelativeCardProps {
   setHabits: (habits: THabit[]) => void;
   setExercises: (exercises: TExercise[]) => void;
   setExerciseGroupSuggestions: (exerciseGroupSuggestions: { name: string, existing: boolean }[]) => void;
-  setDiets: (diets: TDiet[]) => void;
+  setDiet: (diet: TDiet) => void;
   setDietGroupSuggestions: (dietGroupSuggestions: { name: string, existing: boolean }[]) => void;
 }
 
@@ -75,7 +75,7 @@ const relatives = {
   }
 }
 
-export function RelativeCard({ relative, setHabits, setExercises, setExerciseGroupSuggestions, setDiets, setDietGroupSuggestions }: RelativeCardProps) {
+export function RelativeCard({ relative, setHabits, setExercises, setExerciseGroupSuggestions, setDiet, setDietGroupSuggestions }: RelativeCardProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { theme } = useTheme();
   const [themeColors, setThemeColors] = useState(relatives[relative].lightTheme);
@@ -98,18 +98,13 @@ export function RelativeCard({ relative, setHabits, setExercises, setExerciseGro
         setIsLoading(true);
         try {
           const response = await relatives[relative].onClick();
-          console.log(response.data);
           if (relative === "habit") {
-            if (response.data.length > 0) {
-              setHabits(response.data);
-            } else {
-              setHabits([response.data]);
-            }
+            setHabits(response.data.habits);
           } else if (relative === "exercise") {
             setExercises(response.data.exercises);
             setExerciseGroupSuggestions(response.data.suggestedGroups);
           } else if (relative === "diet") {
-            setDiets(response.data.diets);
+            setDiet(response.data.diet);
             setDietGroupSuggestions(response.data.suggestedGroups);
           }
         } catch (error) {

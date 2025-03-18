@@ -65,28 +65,29 @@ Here are some examples of items in results:
 }
 
 Here are some examples of results:
-[
-  {
-    "title": "Drink 16oz of water",
-    "description": null,
-    "category": "Hydration",
-    "time": "Daytime",
-    "frequency": "Every 2 hours"
-  },
-  {
-    "title": "Take a 5-minute breathing break",
-    "description": null,
-    "category": "Mindfulness",
-    "time": "Daytime",
-    "frequency": "12:00 PM"
-  },
-  {
-    "title": "Do 10 push-ups",
-    "description": null,
-    "category": "Movement",
-    "time": "Daytime",
-    "frequency": "Every 2 hours"
-  }
-]
-
+{
+  "habits": [
+    {
+      "title": "Drink 16oz of water",
+      "description": null,
+      "category": "Hydration",
+      "time": "Daytime",
+      "frequency": "Every 2 hours"
+    },
+    {
+      "title": "Take a 5-minute breathing break",
+      "description": null,
+      "category": "Mindfulness",
+      "time": "Daytime",
+      "frequency": "12:00 PM"
+    },
+    {
+      "title": "Do 10 push-ups",
+      "description": null,
+      "category": "Movement",
+      "time": "Daytime",
+      "frequency": "Every 2 hours"
+    }
+  ]
+}
 `;

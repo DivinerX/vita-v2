@@ -58,11 +58,10 @@ export const dietPrompt = (message: string, previousDiets: TExerciseGroup[]) => 
         "existing": false
       }
     ],
-    "diets": [
-      {
-      "type": "breakfast",
-      "time": "7:00 - 8:30 AM",
-      "foods": [
+    "diet": {
+      "breakfast": {
+        "time": "7:00 - 8:30 AM",
+        "foods": [
         {
           "name": "Food Name",
           "description": "Detailed preparation and ingredients in a sentence",
@@ -76,62 +75,59 @@ export const dietPrompt = (message: string, previousDiets: TExerciseGroup[]) => 
           "image": "https://images.unsplash.com/photo-[ID]?auto=format&fit=crop&w=800&q=80"
         }
       ]
-    },
-    {
-      "type": "lunch",
-      "time": "12:00 - 1:30 PM",
-      "foods": [
-        {
-          "name": "Food Name",
-          "description": "Detailed preparation and ingredients in a sentence",
-          "nutrients": { 
-            "calories": 420, 
-            "protein": 14, 
-            "carbs": 52, 
-            "fat": 18 
-          },
-          "benefits": ["Benefit 1", "Benefit 2", "Benefit 3"],
-          "image": "https://images.unsplash.com/photo-[ID]?auto=format&fit=crop&w=800&q=80"
-        }
-      ]
-    },
-    {
-      "type": "dinner",
-      "time": "6:30 - 8:00 PM",
-      "foods": [
-        {
-          "name": "Food Name",
-          "description": "Detailed preparation and ingredients in a sentence",
-          "nutrients": { 
-            "calories": 490, 
-            "protein": 32, 
-            "carbs": 28, 
-            "fat": 22 
-          },
-          "benefits": ["Benefit 1", "Benefit 2", "Benefit 3"],
-          "image": "https://images.unsplash.com/photo-[ID]?auto=format&fit=crop&w=800&q=80"
-        }
-      ]
-    },
-    {
-      "type": "snack",
-      "time": "Between meals",
-      "foods": [
-        {
-          "name": "Food Name",
-          "description": "Detailed preparation and ingredients in a sentence",
-          "nutrients": { 
-            "calories": 220, 
-            "protein": 18, 
-            "carbs": 12, 
-            "fat": 10 
-          },
-          "benefits": ["Benefit 1", "Benefit 2", "Benefit 3"],
-          "image": "https://images.unsplash.com/photo-[ID]?auto=format&fit=crop&w=800&q=80"
-        }
-      ]
+      },
+      "lunch": {
+        "time": "12:00 - 1:30 PM",
+        "foods": [
+          {
+            "name": "Food Name",
+            "description": "Detailed preparation and ingredients in a sentence",
+            "nutrients": { 
+              "calories": 420, 
+              "protein": 14, 
+              "carbs": 52, 
+              "fat": 18 
+            },
+            "benefits": ["Benefit 1", "Benefit 2", "Benefit 3"],
+            "image": "https://images.unsplash.com/photo-[ID]?auto=format&fit=crop&w=800&q=80"
+          }
+        ]
+      },
+      "dinner": {
+        "time": "6:30 - 8:00 PM",
+        "foods": [
+          {
+            "name": "Food Name",
+            "description": "Detailed preparation and ingredients in a sentence",
+            "nutrients": { 
+              "calories": 490, 
+              "protein": 32, 
+              "carbs": 28, 
+              "fat": 22 
+            },
+            "benefits": ["Benefit 1", "Benefit 2", "Benefit 3"],
+            "image": "https://images.unsplash.com/photo-[ID]?auto=format&fit=crop&w=800&q=80"
+          }
+        ]
+      },
+      "snack": {
+        "time": "Between meals",
+        "foods": [
+          {
+            "name": "Food Name",
+            "description": "Detailed preparation and ingredients in a sentence",
+            "nutrients": { 
+              "calories": 220, 
+              "protein": 18, 
+              "carbs": 12, 
+              "fat": 10 
+            },
+            "benefits": ["Benefit 1", "Benefit 2", "Benefit 3"],
+            "image": "https://images.unsplash.com/photo-[ID]?auto=format&fit=crop&w=800&q=80"
+          }
+        ]
+      }
     }
-    ]
   }
 
   # IMPORTANT CONSTRAINTS

@@ -1,7 +1,7 @@
 import { supabase } from "@/config/supabase";
 import { OpenAIService } from "@/services/OpenAIService";
 import { generateDietGroupPrompt } from "./prompt";
-import { TDiet } from "@/types/diet";
+import { TDiet, TFood } from "@/types/diet";
 
 export const getDietsByGroup = async (userId: string) => {
   const { data, error } = await supabase
@@ -18,12 +18,12 @@ export const getDietsByGroup = async (userId: string) => {
 
 export const generateDietGroup = async ({
   dietGroupName,
-  diets
+  diet
 }: {
   dietGroupName: string,
-  diets: TDiet[]
+  diet: TDiet
 }) => {
-  const prompt = generateDietGroupPrompt({ dietGroupName, diets });
+  const prompt = generateDietGroupPrompt({ dietGroupName, diet });
   const response = await OpenAIService.chat.completions.create({
     model: "gpt-4o-mini",
     response_format: { type: "json_object" },
@@ -47,12 +47,12 @@ export const addDietGroup = async ({ user_id, name, description, insight }: { us
   return data;
 };
 
-export const getDietGroup = async ({ user_id, group_id }: { user_id: string, group_id: string }) => {
+export const getDietGroup = async ({ user_id, group_name }: { user_id: string, group_name: string }) => {
   const { data, error } = await supabase
     .from("diet_groups")
     .select("*")
     .eq("user_id", user_id)
-    .eq("id", group_id)
+    .eq("name", group_name)
     .single();
 
   if (error) {
@@ -65,23 +65,30 @@ export const getDietGroup = async ({ user_id, group_id }: { user_id: string, gro
 export const addDiet = async ({ 
   user_id, 
   group_id, 
-  type, 
-  time, 
-  foods, 
-  option 
+  diet
 }: { 
   user_id: string, 
   group_id: string, 
-  type: string, 
-  time: string, 
-  foods: any[],
-  option: string 
+  diet: TDiet;
 }) => {
   const { data, error } = await supabase
     .from("diets")
-    .insert({ user_id, group_id, type, time, foods, option })
+    .insert({ user_id, group_id, diet })
     .select()
     .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data;
+};
+
+export const getAllDietsbyGroup = async ({ user_id }: { user_id: string }) => {
+  const { data, error } = await supabase
+    .from("diet_groups")
+    .select("*, diets(*)")
+    .eq("user_id", user_id);
 
   if (error) {
     throw new Error(error.message);

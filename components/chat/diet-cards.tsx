@@ -11,6 +11,8 @@ import {
 import Image from "next/image";
 import api from "@/config/axios";
 import { DEFAULT_DIET_IMAGES } from "@/constant";
+import { TDiet } from "@/types/diet";
+
 type TDietFood = {
   name: string;
   description: string;
@@ -24,37 +26,40 @@ type TDietFood = {
   image?: string;
 };
 
-type TDietMeal = {
-  type: string;
-  title: string;
-  time: string;
-  foods: TDietFood[];
-};
-
 interface DietCardsProps {
-  diets: TDietMeal[];
+  diet: TDiet;
   suggestedGroups: { name: string; existing: boolean }[];
 }
 
-export function DietCards({ diets, suggestedGroups }: DietCardsProps) {
-  const [selectedTab, setSelectedTab] = useState(diets[0]?.type || "breakfast");
+export function DietCards({ diet, suggestedGroups }: DietCardsProps) {
+  // Transform the diets object into an array format
+  const dietArray = Object.entries(diet).map(([type, meal]) => ({
+    type,
+    title: type.charAt(0).toUpperCase() + type.slice(1),
+    time: meal.time,
+    foods: meal.foods,
+  }));
+
+  const [selectedTab, setSelectedTab] = useState(dietArray[0]?.type || "breakfast");
   const [savingGroup, setSavingGroup] = useState<{ name: string, existing: boolean } | null>(null);
   const [selectedGroup, setSelectedGroup] = useState<{ name: string, existing: boolean } | null>(null);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   const handleSaveDiet = async () => {
     if (!selectedGroup) return;
-    
+    setIsSaving(true)
     try {
       await api.post("/diet", {
         group: selectedGroup,
-        diets: diets
+        diet: diet
       });
       // Success message or notification could be added here
     } catch (error) {
       console.error("Failed to save diet group:", error);
     } finally {
       setSavingGroup(null);
-      setSelectedGroup(null); // Reset selection after saving
+      setSelectedGroup(null);
+      setIsSaving(false);
     }
   };
 
@@ -143,9 +148,9 @@ export function DietCards({ diets, suggestedGroups }: DietCardsProps) {
             size="sm"
             className="flex items-center gap-1 bg-pink-600 hover:bg-pink-700 text-white dark:bg-pink-700 dark:hover:bg-pink-800 shrink-0 whitespace-nowrap"
             onClick={handleSaveDiet}
-            disabled={!selectedGroup || savingGroup !== null}
+            disabled={!selectedGroup || isSaving}
           >
-            {savingGroup ? (
+            {isSaving ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin mr-1" />
                 Saving...
@@ -153,7 +158,7 @@ export function DietCards({ diets, suggestedGroups }: DietCardsProps) {
             ) : (
               <>
                 <Plus className="h-4 w-4 mr-1" />
-                {selectedGroup ? `Save to "${selectedGroup}"` : "Save to..."}
+                {selectedGroup ? `Save to "${selectedGroup.name}"` : "Save to..."}
               </>
             )}
           </Button>
@@ -162,7 +167,7 @@ export function DietCards({ diets, suggestedGroups }: DietCardsProps) {
 
       <Tabs defaultValue={selectedTab} onValueChange={setSelectedTab} className="w-full">
         <TabsList className="grid grid-cols-4 mb-3 h-8 bg-pink-100 dark:bg-pink-900/20 rounded-lg">
-          {diets.map((diet) => (
+          {dietArray.map((diet) => (
             <TabsTrigger 
               key={diet.type} 
               value={diet.type} 
@@ -174,7 +179,7 @@ export function DietCards({ diets, suggestedGroups }: DietCardsProps) {
           ))}
         </TabsList>
 
-        {diets.map((diet) => (
+        {dietArray.map((diet) => (
           <TabsContent key={diet.type} value={diet.type} className="space-y-3">
             {diet.foods.map((food, index) => (
               <Card key={index} className="overflow-hidden shadow-md border-pink-200 dark:border-pink-800/30 bg-white dark:bg-gray-950 hover:shadow-lg transition-shadow duration-200">

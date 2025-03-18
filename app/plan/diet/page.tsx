@@ -5,31 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, ChevronLeft, ChevronRight, Utensils, Citrus as Fruit } from "lucide-react";
 import Link from "next/link";
+import api from "@/config/axios";
+import { useEffect, useState } from "react";
+import { TMeal } from "@/types/diet";
 
-interface MealProps {
-  type: string;
-  title: string;
-  time: string;
-  foods: {
-    name: string;
-    description: string;
-    nutrients: {
-      calories: number;
-      protein: number;
-      carbs: number;
-      fat: number;
-    };
-    benefits: string[];
-    image?: string;
-  }[];
-}
-
-function Meal({ type, title, time, foods }: MealProps) {
+function Meal({ type, time, foods }: TMeal & { type: string }) {
   return (
     <Card className="mb-6">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-center">
-          <CardTitle className="text-lg">{title}</CardTitle>
+          <CardTitle className="text-lg capitalize">{type}</CardTitle>
           <div className="text-sm text-muted-foreground">{time}</div>
         </div>
         <CardDescription>Anti-inflammatory focus</CardDescription>
@@ -40,9 +25,9 @@ function Meal({ type, title, time, foods }: MealProps) {
             <div className="flex gap-4">
               {food.image && (
                 <div className="h-20 w-20 rounded-md overflow-hidden flex-shrink-0">
-                  <img 
-                    src={food.image} 
-                    alt={food.name} 
+                  <img
+                    src={food.image}
+                    alt={food.name}
                     className="h-full w-full object-cover"
                   />
                 </div>
@@ -50,7 +35,7 @@ function Meal({ type, title, time, foods }: MealProps) {
               <div className="flex-1">
                 <h4 className="font-medium">{food.name}</h4>
                 <p className="text-sm text-muted-foreground">{food.description}</p>
-                
+
                 <div className="flex gap-3 mt-2">
                   <div className="text-xs">
                     <span className="font-semibold">{food.nutrients.calories}</span> cal
@@ -65,11 +50,11 @@ function Meal({ type, title, time, foods }: MealProps) {
                     <span className="font-semibold">{food.nutrients.fat}g</span> fat
                   </div>
                 </div>
-                
+
                 <div className="mt-2 flex flex-wrap gap-1">
                   {food.benefits.map((benefit, i) => (
-                    <span 
-                      key={i} 
+                    <span
+                      key={i}
                       className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800"
                     >
                       {benefit}
@@ -161,6 +146,16 @@ export default function DietPlanPage() {
     }
   };
 
+  useEffect(() => {
+    const fetchDietGroupData = async () => {
+      try {
+        const response = await api.get("/diet");
+      } catch (error) {
+        console.error("Error fetching diet data:", error);
+      }
+    }
+    fetchDietGroupData();
+  }, []);
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto">
@@ -172,13 +167,13 @@ export default function DietPlanPage() {
           </Button>
           <h1 className="text-2xl font-bold">Your Diet Plan</h1>
         </div>
-        
+
         <div className="flex justify-between items-center mb-6">
           <div>
             <h2 className="text-xl font-semibold">Anti-inflammatory Diet</h2>
             <p className="text-muted-foreground">Personalized for your health goals</p>
           </div>
-          
+
           <div className="flex space-x-2">
             <Button variant="outline" size="sm" disabled>
               <ChevronLeft className="h-4 w-4 mr-1" />
@@ -190,7 +185,7 @@ export default function DietPlanPage() {
             </Button>
           </div>
         </div>
-        
+
         <Card className="mb-6 border-green-200 bg-green-50">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
@@ -200,14 +195,14 @@ export default function DietPlanPage() {
               <div>
                 <h3 className="font-medium">Diet AI Insights</h3>
                 <p className="text-sm text-muted-foreground">
-                  This plan focuses on reducing inflammation which should help with your bloating and anxiety symptoms. 
+                  This plan focuses on reducing inflammation which should help with your bloating and anxiety symptoms.
                   It's high in omega-3s, antioxidants, and fiber while avoiding common inflammatory triggers.
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
-        
+
         <Tabs defaultValue="day1" className="mb-6">
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-medium">Daily Plan</h3>
@@ -217,27 +212,27 @@ export default function DietPlanPage() {
               <TabsTrigger value="day3">Day 3</TabsTrigger>
             </TabsList>
           </div>
-          
+
           <TabsContent value="day1" className="space-y-4">
             <Meal type="breakfast" {...meals.breakfast} />
             <Meal type="lunch" {...meals.lunch} />
             <Meal type="dinner" {...meals.dinner} />
             <Meal type="snack" {...meals.snacks} />
           </TabsContent>
-          
+
           <TabsContent value="day2">
             <div className="flex items-center justify-center h-40 bg-muted rounded-lg">
               <p className="text-muted-foreground">Plan for Day 2 is being prepared</p>
             </div>
           </TabsContent>
-          
+
           <TabsContent value="day3">
             <div className="flex items-center justify-center h-40 bg-muted rounded-lg">
               <p className="text-muted-foreground">Plan for Day 3 is being prepared</p>
             </div>
           </TabsContent>
         </Tabs>
-        
+
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
@@ -257,7 +252,7 @@ export default function DietPlanPage() {
                 <li>Turmeric and ginger</li>
               </ul>
             </div>
-            
+
             <div>
               <h4 className="font-medium mb-1">Foods to Minimize</h4>
               <ul className="list-disc list-inside text-sm pl-2 space-y-1">
@@ -273,7 +268,7 @@ export default function DietPlanPage() {
             <Button className="w-full">Add to My Plan</Button>
           </CardFooter>
         </Card>
-        
+
         <footer className="mt-8 text-center text-sm text-muted-foreground">
           Every bite is a choice—fuel your future self!
         </footer>
