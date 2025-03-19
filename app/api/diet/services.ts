@@ -87,7 +87,7 @@ export const addDiet = async ({
 export const getAllDietsbyGroup = async ({ user_id }: { user_id: string }) => {
   const { data, error } = await supabase
     .from("diet_groups")
-    .select("*, diets(*)")
+    .select("*, diets(diet)")
     .eq("user_id", user_id);
 
   if (error) {

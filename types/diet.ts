@@ -30,6 +30,6 @@ export type TDietGroup = {
   description: string;
   insight: string;
   user_id: string;
-  diets: TDiet[];
+  diets: { diet: TDiet }[];
   created_at?: string;
 };

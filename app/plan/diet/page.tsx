@@ -7,9 +7,11 @@ import { ArrowLeft, ChevronLeft, ChevronRight, Utensils, Citrus as Fruit } from 
 import Link from "next/link";
 import api from "@/config/axios";
 import { useEffect, useState } from "react";
-import { TMeal } from "@/types/diet";
+import { TMeal, TDietGroup, TDiet } from "@/types/diet";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function Meal({ type, time, foods }: TMeal & { type: string }) {
+  console.log(foods)
   return (
     <Card className="mb-6">
       <CardHeader className="pb-2">
@@ -146,16 +148,31 @@ export default function DietPlanPage() {
     }
   };
 
+  const [loading, setLoading] = useState<boolean>(false);
+  const [mounted, setMounted] = useState<boolean>(false);
+  const [dietGroups, setDietGroups] = useState<TDietGroup[]>([]);
+  const [selectedDietGroupIndex, setSelectedDietGroupIndex] = useState<number>(0);
+  const [selectedDietIndex, setSelectedDietIndex] = useState<number>(0);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     const fetchDietGroupData = async () => {
       try {
+        setLoading(true)
         const response = await api.get("/diet");
+        setDietGroups(response.data);
       } catch (error) {
         console.error("Error fetching diet data:", error);
+      } finally {
+        setLoading(false)
       }
     }
     fetchDietGroupData();
   }, []);
+
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6 lg:p-8">
       <div className="max-w-4xl mx-auto">
@@ -169,17 +186,36 @@ export default function DietPlanPage() {
         </div>
 
         <div className="flex justify-between items-center mb-6">
+          
           <div>
-            <h2 className="text-xl font-semibold">Anti-inflammatory Diet</h2>
-            <p className="text-muted-foreground">Personalized for your health goals</p>
+            {
+              loading || !mounted ? (
+                <Skeleton className="h-10 w-40" />
+              ) : (
+                <>
+                  <h2 className="text-xl font-semibold">{dietGroups[selectedDietGroupIndex].name}</h2>
+                  <p className="text-muted-foreground">{dietGroups[selectedDietGroupIndex].description}</p>
+                </>
+              )
+            }
           </div>
 
           <div className="flex space-x-2">
-            <Button variant="outline" size="sm" disabled>
+            <Button 
+              variant="outline"
+              size="sm"
+              onClick={() => setSelectedDietGroupIndex(selectedDietGroupIndex - 1)}
+              disabled={selectedDietGroupIndex === 0}
+            >
               <ChevronLeft className="h-4 w-4 mr-1" />
               Previous
             </Button>
-            <Button variant="outline" size="sm">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setSelectedDietGroupIndex(selectedDietGroupIndex + 1)}
+              disabled={selectedDietGroupIndex === dietGroups.length - 1}
+            >
               Next
               <ChevronRight className="h-4 w-4 ml-1" />
             </Button>
@@ -194,43 +230,87 @@ export default function DietPlanPage() {
               </div>
               <div>
                 <h3 className="font-medium">Diet AI Insights</h3>
-                <p className="text-sm text-muted-foreground">
-                  This plan focuses on reducing inflammation which should help with your bloating and anxiety symptoms.
-                  It's high in omega-3s, antioxidants, and fiber while avoiding common inflammatory triggers.
-                </p>
+                {
+                  loading || !mounted ? (
+                    <Skeleton className="h-4 w-32" />
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      {dietGroups[selectedDietGroupIndex].insight}
+                    </p>
+                  )
+                }
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Tabs defaultValue="day1" className="mb-6">
+        <Tabs defaultValue={`option-${selectedDietIndex + 1}`} className="mb-6">
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-medium">Daily Plan</h3>
-            <TabsList>
-              <TabsTrigger value="day1">Day 1</TabsTrigger>
-              <TabsTrigger value="day2">Day 2</TabsTrigger>
-              <TabsTrigger value="day3">Day 3</TabsTrigger>
-            </TabsList>
+            {loading || !mounted ? (
+              <div className="flex gap-2">
+                <Skeleton className="h-8 w-20" />
+                <Skeleton className="h-8 w-20" />
+                <Skeleton className="h-8 w-20" />
+              </div>
+            ) : (
+              <TabsList>
+                {dietGroups[selectedDietGroupIndex].diets.map((diet, index) => (
+                  <TabsTrigger key={index} value={`option-${index + 1}`}>Option {index + 1}</TabsTrigger>
+                ))}
+              </TabsList>
+            )}
           </div>
 
-          <TabsContent value="day1" className="space-y-4">
-            <Meal type="breakfast" {...meals.breakfast} />
-            <Meal type="lunch" {...meals.lunch} />
-            <Meal type="dinner" {...meals.dinner} />
-            <Meal type="snack" {...meals.snacks} />
-          </TabsContent>
-
-          <TabsContent value="day2">
-            <div className="flex items-center justify-center h-40 bg-muted rounded-lg">
-              <p className="text-muted-foreground">Plan for Day 2 is being prepared</p>
+          {loading || !mounted ? (
+            // Skeleton for meal cards
+            <div className="space-y-6">
+              {[1, 2, 3, 4].map((i) => (
+                <Card key={i} className="mb-6">
+                  <CardHeader className="pb-2">
+                    <div className="flex justify-between items-center">
+                      <Skeleton className="h-6 w-24" />
+                      <Skeleton className="h-4 w-32" />
+                    </div>
+                    <Skeleton className="h-4 w-48 mt-2" />
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex gap-4">
+                      <Skeleton className="h-20 w-20 rounded-md flex-shrink-0" />
+                      <div className="flex-1 space-y-2">
+                        <Skeleton className="h-5 w-48" />
+                        <Skeleton className="h-4 w-full" />
+                        <div className="flex gap-3">
+                          {[1, 2, 3, 4].map((n) => (
+                            <Skeleton key={n} className="h-4 w-16" />
+                          ))}
+                        </div>
+                        <div className="flex gap-2">
+                          {[1, 2, 3].map((n) => (
+                            <Skeleton key={n} className="h-5 w-20 rounded-full" />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                  <CardFooter>
+                    <Skeleton className="h-4 w-full" />
+                  </CardFooter>
+                </Card>
+              ))}
             </div>
-          </TabsContent>
-
-          <TabsContent value="day3">
-            <div className="flex items-center justify-center h-40 bg-muted rounded-lg">
-              <p className="text-muted-foreground">Plan for Day 3 is being prepared</p>
-            </div>
-          </TabsContent>
+          ) : (
+            dietGroups[selectedDietGroupIndex].diets.map((diet, index) => (
+              <TabsContent key={index} value={`option-${index + 1}`} className="space-y-4">
+                {Object.entries(diet.diet).map(([mealType, meal]) => {
+                  console.log(meal)
+                  return (
+                    <Meal key={mealType} type={mealType} {...meal} />
+                  )
+                })}
+              </TabsContent>
+            ))
+          )}
         </Tabs>
 
         <Card>
