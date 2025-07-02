@@ -1,6 +1,3 @@
-Here's a sample README for your health persona AI project using OpenAI:
-
-```markdown
 # Health Persona AI
 
 ## Overview
@@ -81,7 +78,3 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 - [OpenAI](https://openai.com/) for providing the API that powers the health persona.
 - The open-source community for their invaluable contributions and support.
-
-```
-
-Feel free to modify any sections to better fit your project's specifics!
